@@ -38,9 +38,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        System.out.println("before load");
         loadPreferences();
-        System.out.println("after load");
         for(int i = 0; i < record.size(); i++){
             if(record.get(i).getProject().equals("Study")) study.add(record.get(i));
             else if(record.get(i).getProject().equals("Life")) life.add(record.get(i));
@@ -99,9 +97,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void savePreferences(HashMap<String, ArrayList<Task>> taskList){
+        ArrayList<Task> record = null;
         SharedPreferences sharedPreferences = getSharedPreferences("shared preference", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
+        record = new ArrayList<>();
         for(int i = 0; i < study.size(); i++) record.add(study.get(i));
         for(int i = 0; i < life.size(); i++) record.add(life.get(i));
         for(int i = 0; i < work.size(); i++) record.add(work.get(i));
@@ -109,16 +109,13 @@ public class MainActivity extends AppCompatActivity {
         String json = gson.toJson(record);
         editor.putString("record", json);
         editor.apply();
-        System.out.println("save successfully");
     }
     private void loadPreferences(){
         SharedPreferences sharedPreferences = getSharedPreferences("shared preference", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString("record", "");
         Type type = new TypeToken<ArrayList<Task>>(){}.getType();
-        System.out.println("4");
         record = gson.fromJson(json, type);
-        System.out.println("5");
         if(record == null) record = new ArrayList<>();
     }
 }
