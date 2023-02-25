@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Doit</string>
+    <string-array name="project">
+        <item>Study</item>
+        <item>Life</item>
+        <item>Work</item>
+        <item>Others</item>
+    </string-array>
+</resources>
