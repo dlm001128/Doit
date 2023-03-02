@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    // Git Testing
     String[] projectList = {"Study", "Life", "Work", "Others"};
     HashMap<String, ArrayList<Task>> taskList;
     ArrayList<Task> record = null;
