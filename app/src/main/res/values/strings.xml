@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Doit</string>
+    <string name="app_name">Do it</string>
     <string-array name="project">
         <item>Study</item>
         <item>Life</item>

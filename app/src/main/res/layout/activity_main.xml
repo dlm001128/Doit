@@ -8,8 +8,8 @@
 
     <ExpandableListView
         android:id="@+id/expandableListView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="720dp"
+        android:layout_height="1490dp">
     </ExpandableListView>
 
     <Button
@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="683dp"
         android:text="ADD TASK"
-        android:textSize="20sp"
+        android:textSize="20dp"
         android:onClick="startEditTask"/>
 
 </RelativeLayout>

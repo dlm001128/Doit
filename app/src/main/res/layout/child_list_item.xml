@@ -1,20 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/tvCharacter"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="5dp"
-        android:textSize="25sp"/>
-    <TextView
-        android:id="@+id/tvDeadline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="15sp"/>
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp"
+        app:contentPadding="5dp">
+        <TextView
+            android:id="@+id/tvCharacter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="0dp"
+            android:textSize="20dp"
+            android:textColor="@color/lightblack"
+            android:textStyle="bold"/>
 
+        <CheckBox
+            android:id="@+id/study_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="150dp"
+            android:textColor="@color/purple_200"/>
+
+        <CheckBox
+            android:id="@+id/life_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="150dp"
+            android:textColor="@color/blue"/>
+
+        <CheckBox
+            android:id="@+id/work_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="150dp"
+            android:textColor="@color/teal_200"/>
+
+        <CheckBox
+            android:id="@+id/others_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="150dp" />
+
+        <TextView
+            android:id="@+id/tvDeadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:layout_marginLeft="15dp"
+            android:textSize="15dp"
+            android:textColor="@color/grey"/>
+    </androidx.cardview.widget.CardView>
 </LinearLayout>

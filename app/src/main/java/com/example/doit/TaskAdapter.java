@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -84,8 +85,22 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         if(convertView == null){
             convertView = LayoutInflater.from(context).inflate(R.layout.group_list_item, null);
             holder = new ParentViewHolder();
-            holder.tvTitle = convertView.findViewById(R.id.tvTitle);
-            convertView.setTag(holder);
+            if(groupPosition == 0){
+                holder.tvTitle = convertView.findViewById(R.id.studyTitle);
+                convertView.setTag(holder);
+            }
+            else if(groupPosition == 1){
+                holder.tvTitle = convertView.findViewById(R.id.lifeTitle);
+                convertView.setTag(holder);
+            }
+            else if(groupPosition == 2){
+                holder.tvTitle = convertView.findViewById(R.id.workTitle);
+                convertView.setTag(holder);
+            }
+            else if(groupPosition == 3){
+                holder.tvTitle = convertView.findViewById(R.id.othersTitle);
+                convertView.setTag(holder);
+            }
         }
         else{
             holder = (ParentViewHolder) convertView.getTag();
@@ -107,6 +122,10 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         }
         holder.tvCharacter = convertView.findViewById(R.id.tvCharacter);
         holder.tvDeadline = convertView.findViewById(R.id.tvDeadline);
+        if(groupPosition == 0) holder.cb = convertView.findViewById(R.id.study_checkbox);
+        else if(groupPosition == 1) holder.cb = convertView.findViewById(R.id.life_checkbox);
+        else if(groupPosition == 2) holder.cb = convertView.findViewById(R.id.work_checkbox);
+        else if(groupPosition == 3) holder.cb = convertView.findViewById(R.id.others_checkbox);
         convertView.setTag(holder);
         holder.tvCharacter.setText(curTask.getName());
         holder.tvDeadline.setText(curTask.getDeadline());
@@ -126,6 +145,7 @@ public class TaskAdapter extends BaseExpandableListAdapter {
     public class ChildViewHolder {
         TextView tvCharacter;
         TextView tvDeadline;
+        CheckBox cb;
     }
 
     //组视图容器
