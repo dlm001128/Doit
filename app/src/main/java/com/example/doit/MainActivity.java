@@ -47,26 +47,25 @@ public class MainActivity extends AppCompatActivity {
     String[] projectList = {"Study", "Life", "Work", "Others"};
     HashMap<String, ArrayList<Task>> taskList;
     ArrayList<Task> record = null;
-    ArrayList<Task> study = new ArrayList<>();
-    ArrayList<Task> life = new ArrayList<>();
-    ArrayList<Task> work = new ArrayList<>();
-    ArrayList<Task> others = new ArrayList<>();
-    EditText etn;
-    String name;
-    String deadline;
-    String project;
-    boolean finish;
-    boolean hide;
+    ArrayList<Task> study = new ArrayList<>(); //store study task
+    ArrayList<Task> life = new ArrayList<>(); //store life task
+    ArrayList<Task> work = new ArrayList<>(); //store work task
+    ArrayList<Task> others = new ArrayList<>(); //store others task
+    EditText etn; //用于填写任务名的EditText
+    String name; //task name
+    String deadline; //task deadline
+    String project; //task project
+    boolean finish; //if current task is finished
+    boolean hide; //if current task is hidden
     String index;
-    TextView mInfoTextView;
     TextView mInfoDeadline;
-    TextView tvDelete;
-    Switch fSwitch, hSwitch;
+    TextView tvDelete; //textview_delete
+    Switch fSwitch, hSwitch; //fSwitch-finish, hSwitch-hide
     int year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_;
     String[] day = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
     private ExpandableListView elvProject;
     private TaskAdapter adapter;
-    Button addBtn, confirmBtn;
+    Button addBtn, confirmBtn; //addBtn-add task, confirmBtn-confirm
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.custom_action_bar_layout);
 
+        //加载之前的信息
         loadPreferences();
         for(int i = 0; i < record.size(); i++){
             if(record.get(i).getProject().equals("Study")) study.add(record.get(i));
@@ -85,13 +85,15 @@ public class MainActivity extends AppCompatActivity {
             else if(record.get(i).getProject().equals("Others")) others.add(record.get(i));
         }
         taskList= new HashMap<>();
-        updateList();
+        updateList(); //更新taskList方便TaskAdapter展示task情况
+
         //通过资源标识获得空间实例
         elvProject = findViewById(R.id.expandableListView);
         //创建适配器
         adapter = new TaskAdapter(this, taskList, projectList);
         //给列表空间设置适配器
         elvProject.setAdapter(adapter);
+        //点击子条目
         elvProject.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
@@ -100,14 +102,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //modify task & delete task
+        //长按子条目修改任务信息
         elvProject.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 long packedPos = elvProject.getExpandableListPosition(position);
                 int groupPosition = ExpandableListView.getPackedPositionGroup(packedPos);
                 int childPosition = ExpandableListView.getPackedPositionChild(packedPos);
+                //如果选择的是父条目childPosition为-1，长按父条目的时候我们并不需要修改什么
+                //保证是长按子条目时才对任务信息进行修改
                 if(childPosition != -1){
                     Task curTask = taskList.get(projectList[groupPosition]).get(childPosition);
+                    //先得到当前任务的信息并展示出来
                     name = curTask.getName();
                     deadline = curTask.getDeadline();
                     project = curTask.getProject();
@@ -136,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                             new TimePickerDialog( MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
                                 @Override
                                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                    //在这里更新用户选择的时间，否则数据不是最新的
                                     hourOfDay_ = hourOfDay;
                                     minute_ = minute;
                                     String tempMinute = "" + minute_;
@@ -263,6 +270,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        //点击父条目
         elvProject.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
@@ -271,10 +279,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //点击add task准备添加任务
         addBtn = (Button) findViewById(R.id.addButton);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //底部菜单
                 BottomSheetDialog sheetDialog = new BottomSheetDialog(MainActivity.this, R.style.BottomSheetStyle);
                 View sheetView = LayoutInflater.from(getApplicationContext())
                         .inflate(R.layout.activity_bottom_menu, (LinearLayout)findViewById(R.id.bottom_layout));
@@ -287,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         Calendar calendar=Calendar.getInstance();
                         //Choose exact time(hour, minute)
+                        //用户选择具体时间（时，分）
                         new TimePickerDialog( MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -304,6 +315,7 @@ public class MainActivity extends AppCompatActivity {
                         ,calendar.get(Calendar.HOUR_OF_DAY)
                         ,calendar.get(Calendar.MINUTE),true).show();
                         //Choose date(year,month,day)
+                        //用户选择日期（年，月，日）
                         new DatePickerDialog( MainActivity.this, new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -327,7 +339,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                //Task project
+                //project
+                //用户选择任务所属项目并更新
                 Spinner spinnerProject = sheetView.findViewById(R.id.spinner_project);
                 ArrayAdapter<String> spinner_adapter = new ArrayAdapter<String>(MainActivity.this,
                         android.R.layout.simple_expandable_list_item_1, projectList);
@@ -345,6 +358,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
                 //finish
+                //检查用户选择了finish还是don't finish并更新
                 fSwitch = (Switch) sheetView.findViewById(R.id.finish);
                 fSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
@@ -355,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
                 //hide
+                //检查用户选择了hide还是don't hide并更新
                 hSwitch = (Switch) sheetView.findViewById(R.id.hide);
                 hSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
@@ -363,11 +378,12 @@ public class MainActivity extends AppCompatActivity {
                         else hide = false;
                     }
                 });
-
+                //信息填写完毕最后确认
                 confirmBtn = sheetView.findViewById(R.id.button_confirm);
                 confirmBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        //将填写的信息都写入curTask
                         Task curTask = new Task();
                         name = etn.getText().toString();
                         curTask.setName(name);
@@ -379,17 +395,16 @@ public class MainActivity extends AppCompatActivity {
                         String createTime = sdf.format(System.currentTimeMillis());
                         curTask.setIndex(createTime); //用时间戳做index，保证唯一性
                         curTask.display();
-
+                        //将curTask加入到属于它的任务队列中
                         if(curTask.getProject().equals("Study")) study.add(curTask);
                         else if(curTask.getProject().equals("Life")) life.add(curTask);
                         else if(curTask.getProject().equals("Work")) work.add(curTask);
                         else if(curTask.getProject().equals("Others")) others.add(curTask);
-                        updateList();
-                        adapter.notifyDataSetChanged();
-                        sheetDialog.cancel();
+                        updateList(); //将所有任务队列加入到任务数组中
+                        adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
+                        sheetDialog.cancel(); //让底部菜单自己落下
                     }
                 });
-
                 sheetDialog.setContentView(sheetView);
                 sheetDialog.show();
             }

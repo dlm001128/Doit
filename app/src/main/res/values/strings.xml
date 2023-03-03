@@ -6,4 +6,8 @@
         <item>Work</item>
         <item>Others</item>
     </string-array>
+    <string name="sort_deadline">Sort by deadline</string>
+    <string name="sort_project">Sort by project</string>
+    <string name="show_finished">Show finished tasks</string>
+    <string name="show_hidden">Show hidden tasks</string>
 </resources>
