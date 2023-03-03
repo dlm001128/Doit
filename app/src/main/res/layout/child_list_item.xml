@@ -27,7 +27,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="0dp"
             android:layout_marginLeft="150dp"
-            android:textColor="@color/purple_200"/>
+            android:textColor="@color/purple_200"
+            android:focusable="false"/>
 
         <CheckBox
             android:id="@+id/life_checkbox"
@@ -36,7 +37,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="0dp"
             android:layout_marginLeft="150dp"
-            android:textColor="@color/blue"/>
+            android:textColor="@color/blue"
+            android:focusable="false"/>
 
         <CheckBox
             android:id="@+id/work_checkbox"
@@ -45,7 +47,8 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="0dp"
             android:layout_marginLeft="150dp"
-            android:textColor="@color/teal_200"/>
+            android:textColor="@color/teal_200"
+            android:focusable="false"/>
 
         <CheckBox
             android:id="@+id/others_checkbox"
@@ -53,7 +56,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="0dp"
-            android:layout_marginLeft="150dp" />
+            android:layout_marginLeft="150dp"
+            android:focusable="false"/>
 
         <TextView
             android:id="@+id/tvDeadline"

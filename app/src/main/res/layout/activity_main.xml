@@ -13,11 +13,14 @@
     </ExpandableListView>
 
     <Button
+        android:id="@+id/addButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_marginTop="683dp"
-        android:text="ADD TASK"
-        android:textSize="20dp"
-        android:onClick="startEditTask"/>
+        android:text="⊕ ADD TASK"
+        android:textSize="25dp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:gravity="center"/>
 
 </RelativeLayout>
