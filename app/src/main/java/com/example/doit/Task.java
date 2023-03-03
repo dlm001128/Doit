@@ -5,31 +5,18 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class Task implements Serializable {
-    //private static final long serialVersionUID = 6465198351058235015L;
-    @SerializedName("name_")
     private String name_;
-    @SerializedName("deadline_")
     private String deadline_;
-    @SerializedName("year_")
     private int year_;
-    @SerializedName("month_")
     private int month_;
-    @SerializedName("dayOfMonth_")
     private int dayOfMonth_;
-    @SerializedName("dayOfWeek_")
     private int dayOfWeek_;
-    @SerializedName("hour_")
     private int hour_;
-    @SerializedName("minute_")
     private int minute_;
-    @SerializedName("project_")
     private String project_;
-    @SerializedName("finish_")
     private boolean finish_;
-    @SerializedName("hide_")
     private boolean hide_;
-    @SerializedName("index_")
-    private int index_;
+    private String index_;
 
     public Task() {}
     public String getName() {
@@ -53,7 +40,7 @@ public class Task implements Serializable {
     public boolean getHide() {
         return this.hide_;
     }
-    public int getIndex() {
+    public String getIndex() {
         return this.index_;
     }
     public void setName(String name) {
@@ -77,7 +64,7 @@ public class Task implements Serializable {
     public void setHide(boolean hide) {
         this.hide_ = hide;
     }
-    public void setIndex(int index) {
+    public void setIndex(String index) {
         this.index_ = index;
     }
     public void display(){
@@ -86,5 +73,6 @@ public class Task implements Serializable {
         System.out.println("finish: " + this.finish_);
         System.out.println("hide: " + this.hide_);
         System.out.println("deadline: " + this.deadline_);
+        System.out.println("index: " + this.index_);
     }
 }

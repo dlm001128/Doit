@@ -35,6 +35,7 @@ import com.google.gson.reflect.TypeToken;
 import org.w3c.dom.Text;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -55,15 +56,16 @@ public class MainActivity extends AppCompatActivity {
     String project;
     boolean finish;
     boolean hide;
+    String index;
     TextView mInfoTextView;
     TextView mInfoDeadline;
+    TextView tvDelete;
     Switch fSwitch, hSwitch;
-    int count = 0;
     int year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_;
     String[] day = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
     private ExpandableListView elvProject;
     private TaskAdapter adapter;
-    Button addBtn, addBtnBottom;
+    Button addBtn, confirmBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,170 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+        //modify task & delete task
+        elvProject.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                long packedPos = elvProject.getExpandableListPosition(position);
+                int groupPosition = ExpandableListView.getPackedPositionGroup(packedPos);
+                int childPosition = ExpandableListView.getPackedPositionChild(packedPos);
+                if(childPosition != -1){
+                    Task curTask = taskList.get(projectList[groupPosition]).get(childPosition);
+                    name = curTask.getName();
+                    deadline = curTask.getDeadline();
+                    project = curTask.getProject();
+                    finish = curTask.getFinish();
+                    hide = curTask.getHide();
+                    index = curTask.getIndex();
+                    year_ = curTask.getYear();
+                    month_ = curTask.getMonth();
+                    dayOfMonth_ = curTask.getDayOfMonth();
+                    dayOfWeek_ = curTask.getDayOfWeek();
+                    hourOfDay_ = curTask.getHour();
+                    minute_ = curTask.getMinute();
+
+                    BottomSheetDialog sheetDialog = new BottomSheetDialog(MainActivity.this, R.style.BottomSheetStyle);
+                    View sheetView = LayoutInflater.from(getApplicationContext())
+                            .inflate(R.layout.activity_bottom_menu, (LinearLayout)findViewById(R.id.bottom_layout));
+                    //Task name
+                    etn = (EditText) sheetView.findViewById(R.id.editTaskName);
+                    etn.setText(curTask.getName());
+                    mInfoDeadline = sheetView.findViewById(R.id.textView_deadline);
+                    mInfoDeadline.setText(curTask.getDeadline());
+                    mInfoDeadline.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Calendar calendar=Calendar.getInstance();
+                            new TimePickerDialog( MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                    hourOfDay_ = hourOfDay;
+                                    minute_ = minute;
+                                    String tempMinute = "" + minute_;
+                                    if(minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
+                                    deadline = hourOfDay_ + ":" + tempMinute + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
+                                    String text="你选择了"+hourOfDay+"时"+minute+"分";
+                                    mInfoDeadline.setText(deadline);
+                                    System.out.println(text);
+                                    Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
+                                }
+                            }
+                                    ,calendar.get(Calendar.HOUR_OF_DAY)
+                                    ,calendar.get(Calendar.MINUTE),true).show();
+                            //Choose date(year,month,day)
+                            new DatePickerDialog( MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+                                @Override
+                                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                    year_ = year;
+                                    month_ = month + 1;
+                                    dayOfMonth_ = dayOfMonth;
+                                    dayOfWeek_ = calendar.get(Calendar.DAY_OF_WEEK);
+                                    deadline = hourOfDay_ + ":" + minute_ + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
+                                    String text = "你选择了：" + year + "年" + (month + 1) + "月" + dayOfMonth + "日";
+                                    mInfoDeadline.setText(deadline);
+                                    System.out.println(text);
+                                    Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
+                                }
+                            }
+                                    ,calendar.get(Calendar.YEAR)
+                                    ,calendar.get(Calendar.MONTH)
+                                    ,calendar.get(Calendar.DAY_OF_MONTH)).show();
+                        }
+                    });
+
+                    //Task project
+                    Spinner spinnerProject = sheetView.findViewById(R.id.spinner_project);
+                    ArrayAdapter<String> spinner_adapter = new ArrayAdapter<String>(MainActivity.this,
+                            android.R.layout.simple_expandable_list_item_1, projectList);
+                    spinnerProject.setAdapter(spinner_adapter);
+                    spinnerProject.setSelection(spinner_adapter.getPosition(curTask.getProject()));
+                    spinnerProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            project= spinnerProject.getItemAtPosition(i).toString();
+                            Toast.makeText(MainActivity.this,project,Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+                        }
+                    });
+
+                    //finish
+                    fSwitch = (Switch) sheetView.findViewById(R.id.finish);
+                    fSwitch.setChecked(curTask.getFinish());
+                    fSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if(isChecked) finish = true;
+                            else finish = false;
+                        }
+                    });
+
+                    //hide
+                    hSwitch = (Switch) sheetView.findViewById(R.id.hide);
+                    hSwitch.setChecked(curTask.getHide());
+                    hSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                        @Override
+                        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                            if(isChecked) hide = true;
+                            else hide = false;
+                        }
+                    });
+
+                    tvDelete = (TextView) sheetView.findViewById(R.id.textview_delete);
+                    tvDelete.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(groupPosition == 0) study.remove(childPosition);
+                            else if(groupPosition == 1) life.remove(childPosition);
+                            else if(groupPosition == 2) work.remove(childPosition);
+                            else if(groupPosition == 3) others.remove(childPosition);
+                            updateList();
+                            adapter.notifyDataSetChanged();
+                            sheetDialog.cancel();
+                        }
+                    });
+
+                    confirmBtn = sheetView.findViewById(R.id.button_confirm);
+                    confirmBtn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String prevProject = curTask.getProject();
+                            name = etn.getText().toString();
+                            curTask.setName(name);
+                            curTask.setDeadLine(year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_, deadline);
+                            curTask.setProject(project);
+                            curTask.setFinish(finish);
+                            curTask.setHide(hide);
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSSS");
+                            String createTime = sdf.format(System.currentTimeMillis());
+                            curTask.setIndex(createTime); //用时间戳做index，保证唯一性
+                            //modify project
+                            if(!prevProject.equals(project)){
+                                taskList.get(prevProject).remove(childPosition);
+                                if(groupPosition == 0) study.remove(childPosition);
+                                else if(groupPosition == 1) life.remove(childPosition);
+                                else if(groupPosition == 2) work.remove(childPosition);
+                                else if(groupPosition == 3) others.remove(childPosition);
+
+                                if(project.equals("Study")) study.add(curTask);
+                                else if(project.equals("Life")) life.add(curTask);
+                                else if(project.equals("Work")) work.add(curTask);
+                                else if(project.equals("Others")) others.add(curTask);
+                            }
+                            updateList();
+                            curTask.display();
+                            adapter.notifyDataSetChanged();
+                            sheetDialog.cancel();
+                        }
+                    });
+                    sheetDialog.setContentView(sheetView);
+                    sheetDialog.show();
+                }
+                return false;
+            }
+        });
         elvProject.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
@@ -119,17 +285,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Calendar calendar=Calendar.getInstance();
-                        hourOfDay_ = calendar.get(Calendar.HOUR_OF_DAY);
-                        minute_ = calendar.get(Calendar.MINUTE);
-                        year_ = calendar.get(Calendar.YEAR);
-                        month_ = calendar.get(Calendar.MONTH);
-                        dayOfMonth_ = calendar.get(Calendar.DAY_OF_MONTH);
-                        dayOfWeek_ = calendar.get(Calendar.DAY_OF_WEEK);
                         //Choose exact time(hour, minute)
                         new TimePickerDialog( MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                hourOfDay_ = hourOfDay;
+                                minute_ = minute;
+                                String tempMinute = "" + minute_;
+                                if(minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
+                                deadline = hourOfDay_ + ":" + tempMinute + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
                                 String text="你选择了"+hourOfDay+"时"+minute+"分";
+                                mInfoDeadline.setText(deadline);
+                                System.out.println(text);
                                 Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
                             }
                         }
@@ -139,7 +306,14 @@ public class MainActivity extends AppCompatActivity {
                         new DatePickerDialog( MainActivity.this, new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                year_ = year;
+                                month_ = month + 1;
+                                dayOfMonth_ = dayOfMonth;
+                                dayOfWeek_ = calendar.get(Calendar.DAY_OF_WEEK);
+                                deadline = hourOfDay_ + ":" + minute_ + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
                                 String text = "你选择了：" + year + "年" + (month + 1) + "月" + dayOfMonth + "日";
+                                mInfoDeadline.setText(deadline);
+                                System.out.println(text);
                                 Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
                             }
                         }
@@ -148,9 +322,7 @@ public class MainActivity extends AppCompatActivity {
                         ,calendar.get(Calendar.DAY_OF_MONTH)).show();
 
                         //Display deadline in TextView
-                        mInfoTextView = (TextView) sheetView.findViewById(R.id.textView_deadline);
-                        deadline = hourOfDay_ + ":" + minute_ + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
-                        mInfoTextView.setText(deadline);
+                        mInfoDeadline.setText(deadline);
                     }
                 });
 
@@ -191,8 +363,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                addBtnBottom = sheetView.findViewById(R.id.button_addTask);
-                addBtnBottom.setOnClickListener(new View.OnClickListener() {
+                confirmBtn = sheetView.findViewById(R.id.button_confirm);
+                confirmBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Task curTask = new Task();
@@ -202,8 +374,9 @@ public class MainActivity extends AppCompatActivity {
                         curTask.setProject(project);
                         curTask.setFinish(finish);
                         curTask.setHide(hide);
-                        curTask.setIndex(count);
-                        count++;
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSSS");
+                        String createTime = sdf.format(System.currentTimeMillis());
+                        curTask.setIndex(createTime); //用时间戳做index，保证唯一性
                         curTask.display();
 
                         if(curTask.getProject().equals("Study")) study.add(curTask);
