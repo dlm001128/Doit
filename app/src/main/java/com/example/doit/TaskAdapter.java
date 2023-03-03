@@ -127,9 +127,12 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         else if(groupPosition == 1) holder.cb = convertView.findViewById(R.id.life_checkbox);
         else if(groupPosition == 2) holder.cb = convertView.findViewById(R.id.work_checkbox);
         else if(groupPosition == 3) holder.cb = convertView.findViewById(R.id.others_checkbox);
+        holder.iv = convertView.findViewById(R.id.imageview_hide);
         convertView.setTag(holder);
         holder.tvCharacter.setText(curTask.getName());
         holder.tvDeadline.setText(curTask.getDeadline());
+        if(taskList.get(projectList[groupPosition]).get(childPosition).getHide() == true) holder.iv.setVisibility(View.VISIBLE);
+        else holder.iv.setVisibility(View.INVISIBLE);
 
         return convertView;
     }
@@ -147,6 +150,7 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         TextView tvCharacter;
         TextView tvDeadline;
         CheckBox cb;
+        ImageView iv;
     }
 
     //组视图容器
