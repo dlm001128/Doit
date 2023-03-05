@@ -1,13 +1,28 @@
 <resources>
-    <string name="app_name">Do it</string>
+    <string name="app_name">Doit</string>
     <string-array name="project">
         <item>Study</item>
         <item>Life</item>
         <item>Work</item>
         <item>Others</item>
     </string-array>
-    <string name="sort_deadline">Sort by deadline</string>
-    <string name="sort_project">Sort by project</string>
-    <string name="show_finished">Show finished tasks</string>
-    <string name="show_hidden">Show hidden tasks</string>
+
+    <string name="info_msg">LOG_INFO</string>
+    <string name="debug_msg">LOG_DEBUG</string>
+
+    <string-array name="dayOfWeek">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
+
+    <string name="sort_by_deadline">Sort Tasks by Deadline</string>
+    <string name="sort_by_project">Sort Tasks by Project</string>
+    <string name="show_finished">Show Finished Tasks</string>
+    <string name="show_hidden">Show Hidden Tasks</string>
+
 </resources>

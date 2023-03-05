@@ -1,10 +1,8 @@
 package com.example.doit;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 
-public class Task implements Serializable {
+public class Task implements Serializable, Comparable<Task> {
     private String name_;
     private String deadline_;
     private int year_;
@@ -74,5 +72,18 @@ public class Task implements Serializable {
         System.out.println("hide: " + this.hide_);
         System.out.println("deadline: " + this.deadline_);
         System.out.println("index: " + this.index_);
+    }
+
+    @Override
+    public int compareTo(Task other) {
+        if (this.year_ != other.year_)
+            return this.year_ - other.year_;
+        if (this.month_ != other.month_)
+            return this.month_ - other.month_;
+        if (this.dayOfMonth_ != other.dayOfMonth_)
+            return this.dayOfMonth_ - other.dayOfMonth_;
+        if (this.hour_ != other.hour_)
+            return this.hour_ - other.hour_;
+        return this.minute_ - other.minute_;
     }
 }
