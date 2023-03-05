@@ -242,6 +242,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
+                    // FIXME: There is bug
+                    // TODO: concentrate the source list
                     tvDelete = (TextView) sheetView.findViewById(R.id.textview_delete);
                     tvDelete.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -262,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     confirmBtn = sheetView.findViewById(R.id.button_confirm);
-                    // FIXME: There is bug for
+                    // FIXME: There is bug
                     // TODO: concentrate the source list
                     Task curTask_ = curTask;
                     confirmBtn.setOnClickListener(new View.OnClickListener() {
