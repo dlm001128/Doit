@@ -3,6 +3,7 @@ package com.example.doit;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.time.DayOfWeek;
 
 // This class is a key to search the same day in the taskList.
 
@@ -25,6 +26,15 @@ public class DateKey implements Serializable, Comparable<DateKey> {
         this.month_ = month;
         this.dayOfMonth_ = dayOfMonth;
         this.dayOfWeek_ = dayOfWeek;
+    }
+
+    public DateKey (int year, int month, int dayOfMonth, int dayOfWeek, int hour, int minute) {
+        this.year_ = year;
+        this.month_ = month;
+        this.dayOfMonth_ = dayOfMonth;
+        this.dayOfWeek_ = dayOfWeek;
+        this.hour_ = hour;
+        this.minute_ = minute;
     }
 
     public int getYear_() {
@@ -73,10 +83,20 @@ public class DateKey implements Serializable, Comparable<DateKey> {
         this.minute_ = minute_;
     }
 
+    public String getTitle() {
+        String monthStr = this.month_ < 10 ? "0" + this.month_ : String.valueOf(this.month_);
+        String dayOfMonthStr = this.dayOfMonth_ < 10 ? "0" + this.dayOfMonth_ : String.valueOf(this.dayOfMonth_);
+        String dayOfWeekStr = String.valueOf(this.dayOfWeek_);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            dayOfWeekStr = DayOfWeek.of(this.dayOfWeek_).toString();
+        }
+        return monthStr + "/" + dayOfMonthStr + " " + dayOfWeekStr;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = prime * (this.year_ + this.month_ + this.dayOfMonth_) + this.dayOfWeek_;
+        int result = prime * (this.year_ + this.month_ + this.dayOfMonth_ + this.dayOfWeek_ + this.hour_ + this.minute_);
         return result;
     }
 
@@ -97,12 +117,16 @@ public class DateKey implements Serializable, Comparable<DateKey> {
             return false;
         if (dayOfWeek_ != other.dayOfWeek_)
             return false;
+        if (hour_ != other.hour_)
+            return false;
+        if (minute_ != other.minute_)
+            return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return this.year_ + "/" + this.month_ + "/" + this.dayOfMonth_;
+        return this.year_ + "/" + this.month_ + "/" + this.dayOfMonth_ + " " + this.hour_ + ":" + this.minute_;
     }
 
     @Override

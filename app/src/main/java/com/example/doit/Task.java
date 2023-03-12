@@ -1,5 +1,7 @@
 package com.example.doit;
 
+import androidx.annotation.NonNull;
+
 import java.io.Serializable;
 
 public class Task implements Serializable, Comparable<Task> {
@@ -17,6 +19,20 @@ public class Task implements Serializable, Comparable<Task> {
     private String index_;
 
     public Task() {}
+    public Task(@NonNull Task other) {
+        this.name_ = other.name_;
+        this.deadline_ = other.deadline_;
+        this.year_ = other.year_;
+        this.month_ = other.month_;
+        this.dayOfMonth_ = other.dayOfMonth_;
+        this.dayOfWeek_ = other.dayOfWeek_;
+        this.hour_ = other.hour_;
+        this.minute_ = other.minute_;
+        this.project_ = other.project_;
+        this.finish_ = other.finish_;
+        this.hide_ = other.hide_;
+        this.index_ = other.index_;
+    }
     public String getName() {
         return this.name_;
     }
@@ -72,6 +88,42 @@ public class Task implements Serializable, Comparable<Task> {
         System.out.println("hide: " + this.hide_);
         System.out.println("deadline: " + this.deadline_);
         System.out.println("index: " + this.index_);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Task other = (Task) obj;
+        if (name_ != other.name_)
+            return false;
+        if (deadline_ != other.deadline_)
+            return false;
+        if (year_ != other.year_)
+            return false;
+        if (month_ != other.month_)
+            return false;
+        if (dayOfMonth_ != other.dayOfMonth_)
+            return false;
+        if (dayOfWeek_ != other.dayOfWeek_)
+            return false;
+        if (hour_ != other.hour_)
+            return false;
+        if (minute_ != other.minute_)
+            return false;
+        if (project_ != other.project_)
+            return false;
+        if (finish_ != other.finish_)
+            return false;
+        if (hide_ != other.hide_)
+            return false;
+//        if (index_ != other.index_)
+//            return false;
+        return true;
     }
 
     @Override

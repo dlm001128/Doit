@@ -96,7 +96,7 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
             holder = (ParentViewHolder) convertView.getTag();
         }
 
-        holder.tvTitle.setText(dateList.get(groupPosition).toString());
+        holder.tvTitle.setText(dateList.get(groupPosition).getTitle());
 
         return convertView;
     }

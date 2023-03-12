@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -42,7 +44,7 @@ enum sort_mode {
 
 public class MainActivity extends AppCompatActivity {
     private sort_mode state = sort_mode.DEADLINE;
-    String[] projectList = {"Study", "Life", "Work", "Others"};
+    final String[] projectList = {"Study", "Life", "Work", "Others"};
     ArrayList<DateKey> dateList;
     HashMap<String, ArrayList<Task>> taskList;
     HashMap<DateKey, ArrayList<Task>> taskList_w_date;
@@ -242,20 +244,47 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
-                    // FIXME: There is bug
-                    // TODO: concentrate the source list
                     tvDelete = (TextView) sheetView.findViewById(R.id.textview_delete);
                     tvDelete.setOnClickListener(new View.OnClickListener() {
+                        Task removeTask_ = new Task();
                         @Override
                         public void onClick(View v) {
                             if (state == sort_mode.PROJECT) {
-                                if (groupPosition == 0) study.remove(childPosition);
-                                else if (groupPosition == 1) life.remove(childPosition);
-                                else if (groupPosition == 2) work.remove(childPosition);
-                                else if (groupPosition == 3) others.remove(childPosition);
+                                if (groupPosition == 0) {
+                                    removeTask_ = study.get(childPosition);
+                                    study.remove(childPosition);
+                                } else if (groupPosition == 1) {
+                                    removeTask_ = life.get(childPosition);
+                                    life.remove(childPosition);
+                                } else if (groupPosition == 2) {
+                                    removeTask_ = work.get(childPosition);
+                                    work.remove(childPosition);
+                                } else if (groupPosition == 3) {
+                                    removeTask_ = others.get(childPosition);
+                                    others.remove(childPosition);
+                                }
                                 updateList();
                             } else if (state == sort_mode.DEADLINE) {
-                                deleteTask(groupPosition, childPosition);
+                                removeTask_ = taskList_w_date.get(dateList.get(groupPosition)).get(childPosition);
+                                deleteTaskByIndex(groupPosition, childPosition);
+                            }
+
+                            // Delete the task for other task list
+                            if (state == sort_mode.PROJECT) {
+                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
+                                                          removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
+                                deleteTaskByKey(removeTask_, key);
+                            } else if (state == sort_mode.DEADLINE) {
+                                if (removeTask_.getProject().equals(projectList[0])) {
+                                    study.remove(removeTask_);
+                                } else if (removeTask_.getProject().equals(projectList[1])) {
+                                    life.remove(childPosition);
+                                } else if (removeTask_.getProject().equals(projectList[2])) {
+                                    work.remove(childPosition);
+                                } else if (removeTask_.getProject().equals(projectList[3])) {
+                                    others.remove(childPosition);
+                                }
+                                updateList();
                             }
                             adapter.notifyDataSetChanged();
                             adapter_w_date.notifyDataSetChanged();
@@ -264,12 +293,12 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     confirmBtn = sheetView.findViewById(R.id.button_confirm);
-                    // FIXME: There is bug
-                    // TODO: concentrate the source list
                     Task curTask_ = curTask;
+                    Task removeTask_ = new Task(curTask);
                     confirmBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
                             String prevProject = curTask_.getProject();
                             name = etn.getText().toString();
                             curTask_.setName(name);
@@ -280,22 +309,40 @@ public class MainActivity extends AppCompatActivity {
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSSS");
                             String createTime = sdf.format(System.currentTimeMillis());
                             curTask_.setIndex(createTime); //用时间戳做index，保证唯一性
-                            //modify project
-                            if(!prevProject.equals(project)){
-                                taskList.get(prevProject).remove(childPosition);
-                                if (groupPosition == 0) study.remove(childPosition);
-                                else if (groupPosition == 1) life.remove(childPosition);
-                                else if (groupPosition == 2) work.remove(childPosition);
-                                else if (groupPosition == 3) others.remove(childPosition);
 
-                                if (project.equals("Study")) study.add(curTask_);
-                                else if (project.equals("Life")) life.add(curTask_);
-                                else if (project.equals("Work")) work.add(curTask_);
-                                else if (project.equals("Others")) others.add(curTask_);
+                            //modify project
+                            if (state == sort_mode.PROJECT) {
+                                if (!prevProject.equals(project)) {
+                                    taskList.get(prevProject).remove(childPosition);
+                                    if (groupPosition == 0) study.remove(childPosition);
+                                    else if (groupPosition == 1) life.remove(childPosition);
+                                    else if (groupPosition == 2) work.remove(childPosition);
+                                    else if (groupPosition == 3) others.remove(childPosition);
+
+                                    if (project.equals("Study")) study.add(curTask_);
+                                    else if (project.equals("Life")) life.add(curTask_);
+                                    else if (project.equals("Work")) work.add(curTask_);
+                                    else if (project.equals("Others")) others.add(curTask_);
+                                }
+                            } else if (state == sort_mode.DEADLINE) {
+                                deleteTaskByIndex(groupPosition, childPosition);
+                                addTask(curTask_);
+                            }
+
+
+                            if (state == sort_mode.PROJECT) {
+                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
+                                                          removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
+                                Log.i("modify", key.toString());
+//                                deleteTaskByKey(removeTask_, key);
+//                                addTask(curTask_);
+                            } else if (state == sort_mode.DEADLINE) {
+                                // modify in deadline mode but need to change the taskList
                             }
                             updateList();
-                            curTask_.display();
+//                            curTask_.display();
                             adapter.notifyDataSetChanged();
+                            adapter_w_date.notifyDataSetChanged();
                             sheetDialog.cancel();
                         }
                     });
@@ -341,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
                                 String tempMinute = "" + minute_;
                                 if(minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
                                 deadline = hourOfDay_ + ":" + tempMinute + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
-                                String text="你选择了"+hourOfDay+"时"+minute+"分";
+                                String text = "你选择了" + hourOfDay + "时" + minute + "分";
                                 mInfoDeadline.setText(deadline);
                                 System.out.println(text);
                                 Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
@@ -383,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         project= spinnerProject.getItemAtPosition(i).toString();
-                        Toast.makeText(MainActivity.this,project,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, project, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -454,10 +501,12 @@ public class MainActivity extends AppCompatActivity {
         savePreferences(taskList);
     }
 
-    private void addTask(Task task) {
-        DateKey key = new DateKey(task.getYear(), task.getMonth(), task.getDayOfMonth(), task.getDayOfWeek());
-        if (!dateList.contains(key))
-        {
+    private void addTask(@NonNull Task task) {
+        Log.i("DEBUG", "addTask");
+        DateKey key = new DateKey(task.getYear(), task.getMonth(), task.getDayOfMonth(),
+                                  task.getDayOfWeek(), task.getHour(), task.getMinute());
+        Log.i("DEBUG", key.toString());
+        if (!dateList.contains(key)) {
             dateList.add(key);
             Collections.sort(dateList);
             ArrayList<Task> newTaskList = new ArrayList<>();
@@ -469,11 +518,25 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(taskList_w_date.get(key));
     }
 
-    private void deleteTask(int groupPosition, int childPosition) {
+    private void deleteTaskByIndex(int groupPosition, int childPosition) {
+        Log.i("DEBUG", "deleteTaskByIndex");
         taskList_w_date.get(dateList.get(groupPosition)).remove(childPosition);
         if (taskList_w_date.get(dateList.get(groupPosition)).size() == 0) {
             taskList_w_date.remove(dateList.get(groupPosition));
             dateList.remove(groupPosition);
+        }
+    }
+
+    private void deleteTaskByKey(@NonNull Task task, @NonNull DateKey key) {
+        Log.i("deleteTaskByKey", "Start deleteTaskByKey");
+        Log.i("deleteTaskByKey", key.toString());
+        if (dateList.contains(key)) {
+            task.display();
+            boolean removed = taskList_w_date.get(key).remove(task);
+            if (taskList_w_date.get(key).size() == 0) {
+                taskList_w_date.remove(key);
+                dateList.remove(key);
+            }
         }
     }
 
