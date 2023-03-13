@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Insert record to task list
         for (Task t : record) {
-            addTask(t);
+            addTask(new Task(t));
         }
 
         updateList(); //更新taskList方便TaskAdapter展示task情况
@@ -294,11 +294,11 @@ public class MainActivity extends AppCompatActivity {
 
                     confirmBtn = sheetView.findViewById(R.id.button_confirm);
                     Task curTask_ = curTask;
-                    Task removeTask_ = new Task(curTask);
                     confirmBtn.setOnClickListener(new View.OnClickListener() {
+
                         @Override
                         public void onClick(View v) {
-
+                            Task removeTask_ = new Task(curTask_);
                             String prevProject = curTask_.getProject();
                             name = etn.getText().toString();
                             curTask_.setName(name);
@@ -308,10 +308,10 @@ public class MainActivity extends AppCompatActivity {
                             curTask_.setHide(hide);
                             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSSS");
                             String createTime = sdf.format(System.currentTimeMillis());
-                            curTask_.setIndex(createTime); //用时间戳做index，保证唯一性
-
+                            curTask_.setIndex(createTime); //用时间戳做index，保证唯一
                             //modify project
                             if (state == sort_mode.PROJECT) {
+
                                 if (!prevProject.equals(project)) {
                                     taskList.get(prevProject).remove(childPosition);
                                     if (groupPosition == 0) study.remove(childPosition);
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             } else if (state == sort_mode.DEADLINE) {
                                 deleteTaskByIndex(groupPosition, childPosition);
-                                addTask(curTask_);
+                                addTask(new Task(curTask_));
                             }
 
 
@@ -334,13 +334,28 @@ public class MainActivity extends AppCompatActivity {
                                 DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
                                                           removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
                                 Log.i("modify", key.toString());
-//                                deleteTaskByKey(removeTask_, key);
-//                                addTask(curTask_);
+                                deleteTaskByKey(removeTask_, key);
+                                addTask(curTask_);
                             } else if (state == sort_mode.DEADLINE) {
-                                // modify in deadline mode but need to change the taskList
+                                if (project.equals("Study")) {
+                                    study.remove(removeTask_);
+                                    study.add(curTask_);
+                                }
+                                else if (project.equals("Life")) {
+                                    life.remove(removeTask_);
+                                    life.add(curTask_);
+                                }
+                                else if (project.equals("Work")) {
+                                    work.remove(removeTask_);
+                                    work.add(curTask_);
+                                }
+                                else if (project.equals("Others")) {
+                                    work.remove(removeTask_);
+                                    others.add(curTask_);
+                                }
                             }
                             updateList();
-//                            curTask_.display();
+                            curTask_.display();
                             adapter.notifyDataSetChanged();
                             adapter_w_date.notifyDataSetChanged();
                             sheetDialog.cancel();
@@ -481,7 +496,7 @@ public class MainActivity extends AppCompatActivity {
                         else if(curTask.getProject().equals("Life")) life.add(curTask);
                         else if(curTask.getProject().equals("Work")) work.add(curTask);
                         else if(curTask.getProject().equals("Others")) others.add(curTask);
-                        addTask(curTask);
+                        addTask(new Task(curTask));
                         updateList(); //将所有任务队列加入到任务数组中
                         adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
                         adapter_w_date.notifyDataSetChanged();
@@ -510,10 +525,10 @@ public class MainActivity extends AppCompatActivity {
             dateList.add(key);
             Collections.sort(dateList);
             ArrayList<Task> newTaskList = new ArrayList<>();
-            newTaskList.add(task);
+            newTaskList.add(new Task(task));
             taskList_w_date.put(key, newTaskList);
         } else {
-            taskList_w_date.get(key).add(task);
+            taskList_w_date.get(key).add(new Task(task));
         }
         Collections.sort(taskList_w_date.get(key));
     }
@@ -529,9 +544,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void deleteTaskByKey(@NonNull Task task, @NonNull DateKey key) {
         Log.i("deleteTaskByKey", "Start deleteTaskByKey");
-        Log.i("deleteTaskByKey", key.toString());
+        Log.i("deleteTaskByKey", key.toString())
         if (dateList.contains(key)) {
             task.display();
+            taskList_w_date.get(key).get(0).display();
             boolean removed = taskList_w_date.get(key).remove(task);
             if (taskList_w_date.get(key).size() == 0) {
                 taskList_w_date.remove(key);

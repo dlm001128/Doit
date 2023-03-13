@@ -21,13 +21,6 @@ public class DateKey implements Serializable, Comparable<DateKey> {
     @SerializedName("minute_")
     private int minute_;
 
-    public DateKey (int year, int month, int dayOfMonth, int dayOfWeek) {
-        this.year_ = year;
-        this.month_ = month;
-        this.dayOfMonth_ = dayOfMonth;
-        this.dayOfWeek_ = dayOfWeek;
-    }
-
     public DateKey (int year, int month, int dayOfMonth, int dayOfWeek, int hour, int minute) {
         this.year_ = year;
         this.month_ = month;
