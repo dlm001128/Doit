@@ -1,10 +1,17 @@
 package com.example.doit;
 
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +26,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
+import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -28,6 +36,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
@@ -69,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     private TaskAdapter adapter;
     private TaskDateAdapter adapter_w_date;
     Button addBtn, confirmBtn; //addBtn-add task, confirmBtn-confirm
+    private String CHANNEL_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +90,14 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.custom_action_bar_layout);
+
+        CHANNEL_ID = getString(R.string.channel_id);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "NotificationCode", NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            assert manager != null;
+            manager.createNotificationChannel(channel);
+        }
 
         //加载之前的信息
         loadPreferences();
@@ -544,7 +564,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void deleteTaskByKey(@NonNull Task task, @NonNull DateKey key) {
         Log.i("deleteTaskByKey", "Start deleteTaskByKey");
-        Log.i("deleteTaskByKey", key.toString())
+        Log.i("deleteTaskByKey", key.toString());
         if (dateList.contains(key)) {
             task.display();
             taskList_w_date.get(key).get(0).display();
@@ -609,5 +629,54 @@ public class MainActivity extends AppCompatActivity {
 
         }
         return false;
+    }
+
+    public void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system;
+            // Can't change the importance or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    public void generateNotification(String detail) {
+        @SuppressLint("RemoteViewLayout") RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
+
+        Intent intent = new Intent(MainActivity.this, NotificationReceiver.class);
+
+        intent.setAction("createTask");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        view.setTextViewText(R.id.tv_detail, detail);
+        view.setOnClickPendingIntent(R.id.button_notification, pendingIntent);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+                                                                            .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                                                            .setContent(view)
+                                                                            .setAutoCancel(true)
+                                                                            .setOnlyAlertOnce(true)
+                                                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                                                            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                                                                            .setOngoing(true);
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
+
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManagerCompat.notify(0, builder.build());
     }
 }
