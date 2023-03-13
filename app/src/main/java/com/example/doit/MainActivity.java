@@ -646,11 +646,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Generate notification
     public void generateNotification(String detail) {
         @SuppressLint("RemoteViewLayout") RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
 
         Intent intent = new Intent(MainActivity.this, NotificationReceiver.class);
 
+        // FIXME
         intent.setAction("createTask");
         PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
@@ -668,6 +670,7 @@ public class MainActivity extends AppCompatActivity {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // FIXME
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -677,6 +680,7 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        notificationManagerCompat.notify(0, builder.build());
+
+        notificationManagerCompat.notify(0, builder.build()); // FIXME
     }
 }
