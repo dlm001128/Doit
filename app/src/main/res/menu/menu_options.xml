@@ -24,13 +24,13 @@
         <item android:id="@+id/menu_show_finished"
             android:checkable="true"
             android:title="@string/show_finished"
-            android:checked="false">
+            android:checked="true">
         </item>
 
         <item android:id="@+id/menu_show_hidden"
             android:checkable="true"
             android:title="@string/show_hidden"
-            android:checked="false">
+            android:checked="true">
         </item>
     </group>
 

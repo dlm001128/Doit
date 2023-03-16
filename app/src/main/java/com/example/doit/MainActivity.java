@@ -64,12 +64,24 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Task> life = new ArrayList<>(); //store life task
     ArrayList<Task> work = new ArrayList<>(); //store work task
     ArrayList<Task> others = new ArrayList<>(); //store others task
+
+    // 存储勾选了show_hidden后的新数据
+    ArrayList<Task> study_new = new ArrayList<>(); //store study task
+    ArrayList<Task> life_new = new ArrayList<>(); //store life task
+    ArrayList<Task> work_new = new ArrayList<>(); //store work task
+    ArrayList<Task> others_new = new ArrayList<>(); //store others task
+    MenuItem item;
+
     EditText etn; //用于填写任务名的EditText
     String name; //task name
     String deadline; //task deadline
     String project; //task project
     boolean finish; //if current task is finished
     boolean hide; //if current task is hidden
+
+    // show_hidden & unshow_hidden
+    boolean show_hidden_checked; // if show_hidden checkbox is selected
+
     String index;
     TextView mInfoDeadline;
     TextView tvDelete; //textview_delete
@@ -283,7 +295,8 @@ public class MainActivity extends AppCompatActivity {
                                     removeTask_ = others.get(childPosition);
                                     others.remove(childPosition);
                                 }
-                                updateList();
+                                //updateList();
+                                item_isChecked_state(show_hidden_checked);
                             } else if (state == sort_mode.DEADLINE) {
                                 removeTask_ = taskList_w_date.get(dateList.get(groupPosition)).get(childPosition);
                                 deleteTaskByIndex(groupPosition, childPosition);
@@ -304,7 +317,8 @@ public class MainActivity extends AppCompatActivity {
                                 } else if (removeTask_.getProject().equals(projectList[3])) {
                                     others.remove(childPosition);
                                 }
-                                updateList();
+                                //updateList();
+                                item_isChecked_state(show_hidden_checked);
                             }
                             adapter.notifyDataSetChanged();
                             adapter_w_date.notifyDataSetChanged();
@@ -374,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
                                     others.add(curTask_);
                                 }
                             }
-                            updateList();
+                            item_isChecked_state(show_hidden_checked);
                             curTask_.display();
                             adapter.notifyDataSetChanged();
                             adapter_w_date.notifyDataSetChanged();
@@ -517,9 +531,10 @@ public class MainActivity extends AppCompatActivity {
                         else if(curTask.getProject().equals("Work")) work.add(curTask);
                         else if(curTask.getProject().equals("Others")) others.add(curTask);
                         addTask(new Task(curTask));
-                        updateList(); //将所有任务队列加入到任务数组中
-                        adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
-                        adapter_w_date.notifyDataSetChanged();
+                        //updateList(); //将所有任务队列加入到任务数组中
+                        item_isChecked_state(show_hidden_checked);
+                        // adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
+                        // adapter_w_date.notifyDataSetChanged();
                         sheetDialog.cancel(); //让底部菜单自己落下
                     }
                 });
@@ -534,6 +549,85 @@ public class MainActivity extends AppCompatActivity {
         taskList.put("Work", work);
         taskList.put("Others", others);
         savePreferences(taskList);
+    }
+
+    private void updateList_show_hidden_checked(){
+        taskList.put("Study", study);
+        taskList.put("Life", life);
+        taskList.put("Work", work);
+        taskList.put("Others", others);
+        savePreferences(taskList);
+        adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
+        adapter_w_date.notifyDataSetChanged();
+    }
+
+    private void updateList_show_hidden_unchecked(){
+        study_new.clear();
+        life_new.clear();
+        work_new.clear();
+        others_new.clear();
+        // study
+        for( int i=0; i<study.size(); i++ ){
+            if(study.get(i).getHide() == true){
+                // 若这个item是隐藏了的，则不显示隐藏了的项目
+            }else{
+                // 若这个item是未隐藏的，则需要对其进行展示，将其添加到新的study列表当中
+                study_new.add(study.get(i));
+            }
+        }
+
+        // life
+        for( int i=0; i<life.size(); i++ ){
+            if(life.get(i).getHide() == true){
+                // 若这个item是隐藏了的，则不显示隐藏了的项目
+            }else{
+                // 若这个item是未隐藏的，则需要对其进行展示，将其添加到新的life列表当中
+                life_new.add(life.get(i));
+            }
+        }
+
+        // work
+        for( int i=0; i<work.size(); i++ ){
+            if(work.get(i).getHide() == true){
+                // 若这个item是隐藏了的，则不显示隐藏了的项目
+            }else{
+                // 若这个item是未隐藏的，则需要对其进行展示，将其添加到新的work列表当中
+                work_new.add(work.get(i));
+            }
+        }
+
+        // others
+        for( int i=0; i<others.size(); i++ ){
+            if(others.get(i).getHide() == true){
+                // 若这个item是隐藏了的，则不显示隐藏了的项目
+            }else{
+                // 若这个item是未隐藏的，则需要对其进行展示，将其添加到新的others列表当中
+                others_new.add(others.get(i));
+            }
+        }
+
+
+        // update
+        taskList.clear();
+        taskList.put("Study", study_new);
+        taskList.put("Life", life_new);
+        taskList.put("Work", work_new);
+        taskList.put("Others", others_new);
+        savePreferences(taskList);
+
+        adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
+        adapter_w_date.notifyDataSetChanged();
+
+    }
+
+    public void item_isChecked_state(boolean flag){
+        if(flag){
+            // 显示隐藏了的项目
+            updateList_show_hidden_checked();
+        }else{
+            // 不显示隐藏了的项目
+            updateList_show_hidden_unchecked();
+        }
     }
 
     private void addTask(@NonNull Task task) {
@@ -624,9 +718,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_show_finished:
                 return true;
-            case R.id.menu_show_hidden:
-                return true;
 
+            case R.id.menu_show_hidden:
+                item.setChecked(item.isChecked() ? false : true);
+                show_hidden_checked = item.isChecked();
+                item_isChecked_state(show_hidden_checked);
+                return true;
         }
         return false;
     }
