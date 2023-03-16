@@ -6,6 +6,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,11 +17,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -34,6 +37,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -43,6 +47,9 @@ import androidx.core.app.NotificationManagerCompat;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -59,17 +66,47 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<DateKey> dateList;
     HashMap<String, ArrayList<Task>> taskList;
     HashMap<DateKey, ArrayList<Task>> taskList_w_date;
+
     ArrayList<Task> record = null;
     ArrayList<Task> study = new ArrayList<>(); //store study task
     ArrayList<Task> life = new ArrayList<>(); //store life task
     ArrayList<Task> work = new ArrayList<>(); //store work task
     ArrayList<Task> others = new ArrayList<>(); //store others task
+
+
+    ArrayList<Task> study_hidden_finished = new ArrayList<>(); //store study task
+    ArrayList<Task> life_hidden_finished = new ArrayList<>(); //store life task
+    ArrayList<Task> work_hidden_finished = new ArrayList<>(); //store work task
+    ArrayList<Task> others_hidden_finished = new ArrayList<>(); //store others task
+
+    ArrayList<Task> study_hidden_unfinished = new ArrayList<>(); //store study task
+    ArrayList<Task> life_hidden_unfinished = new ArrayList<>(); //store life task
+    ArrayList<Task> work_hidden_unfinished = new ArrayList<>(); //store work task
+    ArrayList<Task> others_hidden_unfinished = new ArrayList<>(); //store others task
+
+    ArrayList<Task> study_unhidden_finished = new ArrayList<>(); //store study task
+    ArrayList<Task> life_unhidden_finished = new ArrayList<>(); //store life task
+    ArrayList<Task> work_unhidden_finished = new ArrayList<>(); //store work task
+    ArrayList<Task> others_unhidden_finished = new ArrayList<>(); //store others task
+
+    ArrayList<Task> study_unhidden_unfinished = new ArrayList<>(); //store study task
+    ArrayList<Task> life_unhidden_unfinished = new ArrayList<>(); //store life task
+    ArrayList<Task> work_unhidden_unfinished = new ArrayList<>(); //store work task
+    ArrayList<Task> others_unhidden_unfinished = new ArrayList<>(); //store others task
+
+
+
+
+
     EditText etn; //用于填写任务名的EditText
     String name; //task name
     String deadline; //task deadline
     String project; //task project
     boolean finish; //if current task is finished
     boolean hide; //if current task is hidden
+    boolean show_finish ; //if current task is finished
+    boolean show_hide ; //if current task is hidden
+
     String index;
     TextView mInfoDeadline;
     TextView tvDelete; //textview_delete
@@ -80,7 +117,10 @@ public class MainActivity extends AppCompatActivity {
     private TaskAdapter adapter;
     private TaskDateAdapter adapter_w_date;
     Button addBtn, confirmBtn; //addBtn-add task, confirmBtn-confirm
+    CheckBox checkBox;
     private String CHANNEL_ID;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             addTask(new Task(t));
         }
 
-        updateList(); //更新taskList方便TaskAdapter展示task情况
+        updateList(study,life,work,others); //更新taskList方便TaskAdapter展示task情况
 
         //通过资源标识获得空间实例
         elvProject = findViewById(R.id.expandableListView);
@@ -139,10 +179,18 @@ public class MainActivity extends AppCompatActivity {
         elvProject.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                Toast.makeText(MainActivity.this, "父级条目：" + groupPosition + "  子条目：" + childPosition + "  id:" + id, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "父级条目：" + groupPosition + "  子条目：" + childPosition + "  id:" + id , Toast.LENGTH_SHORT).show();
                 return false;
             }
+
+//            View chekView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.child_list, null);
+//            checkBox = (CheckBox) chekView.findViewById(R.id.checkbox);
+
+
+
         });
+
+
         //modify task & delete task
         //长按子条目修改任务信息
         elvProject.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -182,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                     mInfoDeadline = sheetView.findViewById(R.id.textView_deadline);
                     mInfoDeadline.setText(curTask.getDeadline());
                     mInfoDeadline.setOnClickListener(new View.OnClickListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.N)
                         @Override
                         public void onClick(View v) {
                             Calendar calendar = Calendar.getInstance();
@@ -247,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             finish = isChecked;
+
 //                            if(isChecked) finish = true;
 //                            else finish = false;
                         }
@@ -259,6 +309,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             hide = isChecked;
+
 //                            if(isChecked) hide = true;
 //                            else hide = false;
                         }
@@ -283,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
                                     removeTask_ = others.get(childPosition);
                                     others.remove(childPosition);
                                 }
-                                updateList();
+                                updateList(study,life,work,others);
                             } else if (state == sort_mode.DEADLINE) {
                                 removeTask_ = taskList_w_date.get(dateList.get(groupPosition)).get(childPosition);
                                 deleteTaskByIndex(groupPosition, childPosition);
@@ -304,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
                                 } else if (removeTask_.getProject().equals(projectList[3])) {
                                     others.remove(childPosition);
                                 }
-                                updateList();
+                                updateList(study,life,work,others);
                             }
                             adapter.notifyDataSetChanged();
                             adapter_w_date.notifyDataSetChanged();
@@ -326,23 +377,139 @@ public class MainActivity extends AppCompatActivity {
                             curTask_.setProject(project);
                             curTask_.setFinish(finish);
                             curTask_.setHide(hide);
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSSS");
+                            SimpleDateFormat sdf = null;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                                sdf = new SimpleDateFormat("yyyyMMddHHmmssSSSS");
+                            }
                             String createTime = sdf.format(System.currentTimeMillis());
                             curTask_.setIndex(createTime); //用时间戳做index，保证唯一
                             //modify project
                             if (state == sort_mode.PROJECT) {
+                                Toast.makeText( MainActivity.this, "1级if", Toast.LENGTH_SHORT ).show();
 
                                 if (!prevProject.equals(project)) {
+                                    Toast.makeText( MainActivity.this, "2级if", Toast.LENGTH_SHORT ).show();
                                     taskList.get(prevProject).remove(childPosition);
-                                    if (groupPosition == 0) study.remove(childPosition);
-                                    else if (groupPosition == 1) life.remove(childPosition);
-                                    else if (groupPosition == 2) work.remove(childPosition);
-                                    else if (groupPosition == 3) others.remove(childPosition);
+                                    //上方taskList中的task删除后，对应分组的task会同样被删除
+//                                    if (groupPosition == 0) study.remove(childPosition);
+//                                    else if (groupPosition == 1) life.remove(childPosition);
+//                                    else if (groupPosition == 2) work.remove(childPosition);
+//                                    else if (groupPosition == 3) others.remove(childPosition);
 
-                                    if (project.equals("Study")) study.add(curTask_);
-                                    else if (project.equals("Life")) life.add(curTask_);
-                                    else if (project.equals("Work")) work.add(curTask_);
-                                    else if (project.equals("Others")) others.add(curTask_);
+
+
+
+                                }
+                                if (project.equals("Study")){
+                                    if(hide && finish){
+                                        study_hidden_finished.add(curTask_);
+                                    }else if(!hide && finish){
+                                        study_unhidden_finished.add(curTask_);
+                                    }else if(hide && !finish){
+                                        study_hidden_unfinished.add(curTask_);
+                                    }else if(!hide && !finish){
+                                        study_unhidden_unfinished.add(curTask_);
+                                    }
+
+                                    //study.add(curTask_);
+                                    if(show_hide && show_finish){
+                                        study = (ArrayList<Task>)study_hidden_finished.clone();
+                                    }else if(!show_hide && show_finish){
+                                        study = (ArrayList<Task>)study_unhidden_finished.clone();
+                                    }else if(show_hide && !show_finish){
+                                        study = (ArrayList<Task>)study_hidden_unfinished.clone();
+                                    }else if(!show_hide && !show_finish){
+                                        study = (ArrayList<Task>)study_unhidden_unfinished.clone();
+                                    }
+                                }
+                                else if (project.equals("Life")){
+                                    if(hide && finish){
+                                        //隐藏完成
+                                        life_hidden_finished.add(curTask_);
+                                    }else if(!hide && finish){
+                                        //未隐藏完成
+                                        life_unhidden_finished.add(curTask_);
+                                    }else if(hide && !finish){
+                                        //隐藏未完成
+                                        life_hidden_unfinished.add(curTask_);
+                                    }else if(!hide && !finish){
+                                        //未隐藏未完成
+                                        life_unhidden_unfinished.add(curTask_);
+                                    }
+                                    //显示隐藏和完成
+                                    if(show_hide && show_finish){
+                                        life = (ArrayList<Task>)life_hidden_finished.clone();
+                                    }else if(!show_hide ){
+                                        //不显示隐藏，显示完成
+                                        life = (ArrayList<Task>)life_unhidden_finished.clone();
+                                        //life = null;
+                                    }else if(show_hide && !show_finish){
+                                        //显示隐藏，不显示完成
+                                        life = (ArrayList<Task>)life_hidden_unfinished.clone();
+                                    }else if(!show_hide && !show_finish){
+                                        //不显示隐藏，不显示完成
+                                        life = (ArrayList<Task>)life_unhidden_unfinished.clone();
+                                    }
+//                                    if(show_hide&&show_finish){
+//                                        life = (ArrayList<Task>)life_hidden_finished.clone();
+//                                        life.addAll(life_unhidden_finished);
+//                                        life.addAll(life_hidden_unfinished);
+//                                        life.addAll(life_unhidden_unfinished);
+//
+//                                    }else if(show_hide && !show_finish){
+//                                        life = (ArrayList<Task>)life_hidden_unfinished.clone();
+//                                        life.addAll(life_hidden_finished);
+//                                    }else if(!show_hide && show_finish ){
+//                                        life = null;
+//                                    }else if()
+                                }
+                                else if (project.equals("Work")) {
+                                    if(hide && finish){
+                                        work_hidden_finished.add(curTask_);
+                                    }else if(!hide && finish){
+                                        work_unhidden_finished.add(curTask_);
+                                    }else if(hide && !finish){
+                                        work_hidden_unfinished.add(curTask_);
+                                    }else if(hide && (!finish)){
+                                        work_unhidden_unfinished.add(curTask_);
+                                    }
+                                    //work.add(curTask_);
+                                    if(show_hide && show_finish){
+                                        work = (ArrayList<Task>)work_hidden_finished.clone();
+                                    }else if(!show_hide && show_finish){
+                                        work = (ArrayList<Task>)work_unhidden_finished.clone();
+                                    }else if(show_hide && !show_finish){
+                                        work = (ArrayList<Task>)work_hidden_unfinished.clone();
+                                    }else if(!show_hide && !show_finish){
+                                        work = (ArrayList<Task>)work_unhidden_unfinished.clone();
+                                    }
+
+                                }
+                                else if (project.equals("Others")){
+                                    if(hide && finish){
+                                        others_hidden_finished.add(curTask_);
+
+                                    }else if(!hide && finish){
+                                        others_unhidden_finished.add(curTask_);
+
+                                    }else if(hide && !finish){
+                                        others_hidden_unfinished.add(curTask_);
+
+                                    }else if(!hide && !finish){
+                                        others_unhidden_unfinished.add(curTask_);
+
+                                    }
+                                    //others.add(curTask_);
+                                    if(show_hide && show_finish){
+                                        others = (ArrayList<Task>)others_hidden_finished.clone();
+                                    }else if(!show_hide && show_finish){
+                                        others = (ArrayList<Task>)others_unhidden_finished.clone();
+                                    }else if(show_hide && !show_finish){
+                                        others = (ArrayList<Task>)others_hidden_unfinished.clone();
+                                    }else if(!show_hide && !show_finish){
+                                        others = (ArrayList<Task>)others_unhidden_unfinished.clone();
+                                    }
+
                                 }
                             } else if (state == sort_mode.DEADLINE) {
                                 deleteTaskByIndex(groupPosition, childPosition);
@@ -374,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
                                     others.add(curTask_);
                                 }
                             }
-                            updateList();
+                            updateList(study,life,work,others);
                             curTask_.display();
                             adapter.notifyDataSetChanged();
                             adapter_w_date.notifyDataSetChanged();
@@ -397,6 +564,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+
         //点击add task准备添加任务
         addBtn = (Button) findViewById(R.id.addButton);
         addBtn.setOnClickListener(new View.OnClickListener() {
@@ -410,6 +580,7 @@ public class MainActivity extends AppCompatActivity {
 
                 mInfoDeadline = sheetView.findViewById(R.id.textView_deadline);
                 mInfoDeadline.setOnClickListener(new View.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onClick(View v) {
                         Calendar calendar = Calendar.getInstance();
@@ -497,6 +668,7 @@ public class MainActivity extends AppCompatActivity {
                 //信息填写完毕最后确认
                 confirmBtn = sheetView.findViewById(R.id.button_confirm);
                 confirmBtn.setOnClickListener(new View.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.N)
                     @Override
                     public void onClick(View v) {
                         //将填写的信息都写入curTask
@@ -517,7 +689,7 @@ public class MainActivity extends AppCompatActivity {
                         else if(curTask.getProject().equals("Work")) work.add(curTask);
                         else if(curTask.getProject().equals("Others")) others.add(curTask);
                         addTask(new Task(curTask));
-                        updateList(); //将所有任务队列加入到任务数组中
+                        updateList(study,life,work,others); //将所有任务队列加入到任务数组中
                         adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
                         adapter_w_date.notifyDataSetChanged();
                         sheetDialog.cancel(); //让底部菜单自己落下
@@ -528,13 +700,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void updateList(){
+    private void updateList(ArrayList<Task> study,ArrayList<Task> life,ArrayList<Task> work,ArrayList<Task> others){
+
         taskList.put("Study", study);
         taskList.put("Life", life);
         taskList.put("Work", work);
         taskList.put("Others", others);
         savePreferences(taskList);
     }
+
+
 
     private void addTask(@NonNull Task task) {
         Log.i("DEBUG", "addTask");
@@ -607,6 +782,37 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+
+    //选择checkBox时更新finished和hide状态
+    private void checkMenuCheckBox(){
+        if(show_hide && show_finish){
+            study = (ArrayList<Task>)study_hidden_finished.clone();
+            work = (ArrayList<Task>)work_hidden_finished.clone();
+            life = (ArrayList<Task>)life_hidden_finished.clone();
+            others = (ArrayList<Task>)others_hidden_finished.clone();
+        }else if(!show_hide && show_finish){
+            study = (ArrayList<Task>)study_unhidden_finished.clone();
+            work = (ArrayList<Task>)work_unhidden_finished.clone();
+            life = (ArrayList<Task>)life_unhidden_finished.clone();
+            others = (ArrayList<Task>)others_unhidden_finished.clone();
+        }else if(show_hide && !show_finish){
+            study = (ArrayList<Task>)study_hidden_unfinished.clone();
+            work = (ArrayList<Task>)work_hidden_unfinished.clone();
+            life = (ArrayList<Task>)life_hidden_unfinished.clone();
+            others = (ArrayList<Task>)others_hidden_unfinished.clone();
+        }else if(!show_hide && !show_finish){
+            study = (ArrayList<Task>)study_unhidden_unfinished.clone();
+            work = (ArrayList<Task>)work_unhidden_unfinished.clone();
+            life = (ArrayList<Task>)life_unhidden_unfinished.clone();
+            others = (ArrayList<Task>)others_unhidden_unfinished.clone();
+        }
+
+
+
+    }
+
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -623,8 +829,42 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "menu_sort_by_project", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_show_finished:
+                item.setChecked(item.isChecked() ? false : true);
+                Toast.makeText(this, "menu_show_finished", Toast.LENGTH_SHORT).show();
+                if(item.isChecked()){
+                    show_finish = true;
+                }else{
+                    show_finish = false;
+                }
+//                if(item.getItemId() ==R.id.menu_sort_by_deadline){
+//                    elvProject.setAdapter(adapter_w_date);
+//                }else if(item.getItemId() ==R.id.menu_show_finished){
+//                    elvProject.setAdapter(adapter);
+//                }
                 return true;
+
             case R.id.menu_show_hidden:
+                item.setChecked(item.isChecked() ? false : true);
+                Toast.makeText(this, "menu_show_finished", Toast.LENGTH_SHORT).show();
+                if(item.isChecked()){
+                    show_hide = true;
+                }else{
+                    show_hide = false;
+                }
+//                if(show_hide && show_finish){
+//                    study = (ArrayList<Task>)study_hidden_finished.clone();
+//                }else if(!show_hide && show_finish){
+//                    study = (ArrayList<Task>)study_unhidden_finished.clone();
+//                }else if(show_hide && !show_finish){
+//                    study = (ArrayList<Task>)study_hidden_unfinished.clone();
+//                }else if(!show_hide && !show_finish){
+//                    study = (ArrayList<Task>)study_unhidden_unfinished.clone();
+//                }
+//                if(item.getItemId() ==R.id.menu_sort_by_deadline){
+//                    elvProject.setAdapter(adapter_w_date);
+//                }else if(item.getItemId() ==R.id.menu_show_finished){
+//                    elvProject.setAdapter(adapter);
+//                }
                 return true;
 
         }
