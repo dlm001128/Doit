@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -143,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         for (Task t : record) {
             addTask(new Task(t));
         }
+        taskList_w_date_record.putAll(taskList_w_date);
 
         updateList(); //更新taskList方便TaskAdapter展示task情况
 
@@ -157,14 +159,42 @@ public class MainActivity extends AppCompatActivity {
         else if (state == sort_mode.DEADLINE)
             elvProject.setAdapter(adapter_w_date);
 
+
+
         //点击子条目
         elvProject.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
-                Toast.makeText(MainActivity.this, "父级条目：" + groupPosition + "  子条目：" + childPosition + "  id:" + id, Toast.LENGTH_SHORT).show();
+                //尝试链接finish和check
+//                CheckBox checkBox = null;
+//                if(state == sort_mode.DEADLINE ){
+//                    checkBox = (CheckBox) v.findViewById(R.id.checkbox);
+//                }else if(state == sort_mode.PROJECT ){
+//
+////                    if (project.equals("Study")) checkBox = (CheckBox) v.findViewById(R.id.study_checkbox);
+////                    else if (project.equals("Life")) checkBox = (CheckBox) v.findViewById(R.id.life_checkbox);
+////                    else if (project.equals("Work")) checkBox = (CheckBox) v.findViewById(R.id.work_checkbox);
+////                    else if (project.equals("Others")) checkBox = (CheckBox) v.findViewById(R.id.others_checkbox);
+//
+//
+//                }
+//                if(checkBox != null){
+//                    checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                        @Override
+//                        public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+//                            finish = isChecked;
+//                        }
+//                    });
+//                }
+
+
+                Toast.makeText(MainActivity.this, "  子条目：" + childPosition + "  id:" + id + " finish"+finish, Toast.LENGTH_SHORT).show();
                 return false;
             }
+
+
         });
+
         //modify task & delete task
         //长按子条目修改任务信息
         elvProject.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

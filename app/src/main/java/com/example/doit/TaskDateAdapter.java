@@ -126,6 +126,9 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
         else
             holder.iv.setVisibility(View.INVISIBLE);
 
+        if(curTask.getFinish() == true) holder.cb.setChecked(true);
+        else holder.cb.setChecked(false);
+
         return convertView;
     }
 

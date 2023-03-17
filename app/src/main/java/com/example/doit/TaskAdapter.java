@@ -134,6 +134,9 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         if(taskList.get(projectList[groupPosition]).get(childPosition).getHide() == true) holder.iv.setVisibility(View.VISIBLE);
         else holder.iv.setVisibility(View.INVISIBLE);
 
+        if(taskList.get(projectList[groupPosition]).get(childPosition).getFinish() == true) holder.cb.setChecked(true);
+        else holder.cb.setChecked(false);
+
         return convertView;
     }
 
