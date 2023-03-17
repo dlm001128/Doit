@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<DateKey> dateList;
     HashMap<String, ArrayList<Task>> taskList;
     HashMap<DateKey, ArrayList<Task>> taskList_w_date;
+    HashMap<DateKey, ArrayList<Task>> taskList_w_unfinish_date;
+    HashMap<DateKey, ArrayList<Task>> taskList_w_date_record;
     ArrayList<Task> record = null;
     ArrayList<Task> study = new ArrayList<>(); //store study task
     ArrayList<Task> life = new ArrayList<>(); //store life task
@@ -133,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the parameter
         taskList = new HashMap<>();
         taskList_w_date = new HashMap<>();
+        taskList_w_date_record = new HashMap<>();
+        taskList_w_unfinish_date = new HashMap<>();
         dateList = new ArrayList<>();
 
         // Insert record to task list
@@ -146,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         elvProject = findViewById(R.id.expandableListView);
         //创建适配器
         adapter = new TaskAdapter(this, taskList, projectList);
-        adapter_w_date = new TaskDateAdapter(this, taskList_w_date, dateList);
+        adapter_w_date = new TaskDateAdapter(this, taskList_w_date_record, dateList);
         //给列表空间设置适配器
         if (state == sort_mode.PROJECT)
             elvProject.setAdapter(adapter);
@@ -567,6 +571,8 @@ public class MainActivity extends AppCompatActivity {
         taskList.put("Work", work);
         taskList.put("Others", others);
         savePreferences(taskList);
+
+        taskList_w_date_record.putAll(taskList_w_date);
         adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
         adapter_w_date.notifyDataSetChanged();
     }
@@ -577,6 +583,9 @@ public class MainActivity extends AppCompatActivity {
         taskList.put("Work", work);
         taskList.put("Others", others);
         savePreferences(taskList);
+
+        taskList_w_date_record.putAll(taskList_w_date);
+
         adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
         adapter_w_date.notifyDataSetChanged();
     }
@@ -645,6 +654,9 @@ public class MainActivity extends AppCompatActivity {
         life_unfinish.clear();
         work_unfinish.clear();
         others_unfinish.clear();
+        taskList_w_unfinish_date.clear();
+
+
         // study
         for( int i=0; i<study.size(); i++ ){
             if(study.get(i).getFinish() == true){
@@ -685,6 +697,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        //deadline
+        taskList_w_date.forEach((key, value) -> {
+            ArrayList<Task> temp = new ArrayList<>();
+            for( int i=0; i<value.size(); i++ ){
+                if(value.get(i).getFinish() == true){
+                    // 若这个item是完成了的，则不显示完成了的项目
+                }else{
+                    // 若这个item是未完成的，则需要对其进行展示，将其添加到新的others列表当中
+                    temp.add(value.get(i));
+                }
+            }
+            taskList_w_unfinish_date.put(key,temp);
+        });
+
+
 
         // update
         taskList.clear();
@@ -693,6 +720,10 @@ public class MainActivity extends AppCompatActivity {
         taskList.put("Work", work_unfinish);
         taskList.put("Others", others_unfinish);
         savePreferences(taskList);
+
+        taskList_w_date_record.clear();
+
+        taskList_w_date_record.putAll(taskList_w_unfinish_date);
 
         adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
         adapter_w_date.notifyDataSetChanged();
@@ -711,10 +742,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void item_finish_isChecked_state(boolean flag){
         if(flag){
-            // 显示隐藏了的项目
+            // 显示完成了的项目
             updateList_show_finished_checked();
         }else{
-            // 不显示隐藏了的项目
+            // 不显示完成了的项目
             updateList_show_finished_unchecked();
         }
     }
