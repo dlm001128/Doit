@@ -1,4 +1,4 @@
-package com.example.doit;
+package com.ee5415.doit;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
@@ -21,7 +21,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -41,6 +40,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.ee5415.doit.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -50,12 +50,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-enum sort_mode {
-    DEADLINE, PROJECT
-}
+//enum SortMode {
+//    DEADLINE, PROJECT
+//}
 
 public class MainActivity extends AppCompatActivity {
-    private sort_mode state = sort_mode.DEADLINE;
+    private SortMode state = SortMode.DEADLINE;
     final String[] projectList = {"Study", "Life", "Work", "Others"};
     ArrayList<DateKey> dateList;
     HashMap<String, ArrayList<Task>> taskList;
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.custom_action_bar_layout);
 
         CHANNEL_ID = getString(R.string.channel_id);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "NotificationCode", NotificationManager.IMPORTANCE_DEFAULT);
             NotificationManager manager = getSystemService(NotificationManager.class);
             assert manager != null;
@@ -123,14 +123,14 @@ public class MainActivity extends AppCompatActivity {
 
         //加载之前的信息
         loadPreferences();
-        for(int i = 0; i < record.size(); i++){
-            if(record.get(i).getProject().equals("Study"))
+        for (int i = 0; i < record.size(); i++) {
+            if (record.get(i).getProject().equals("Study"))
                 study.add(record.get(i));
-            else if(record.get(i).getProject().equals("Life"))
+            else if (record.get(i).getProject().equals("Life"))
                 life.add(record.get(i));
-            else if(record.get(i).getProject().equals("Work"))
+            else if (record.get(i).getProject().equals("Work"))
                 work.add(record.get(i));
-            else if(record.get(i).getProject().equals("Others"))
+            else if (record.get(i).getProject().equals("Others"))
                 others.add(record.get(i));
         }
 
@@ -156,12 +156,10 @@ public class MainActivity extends AppCompatActivity {
         adapter = new TaskAdapter(this, taskList, projectList);
         adapter_w_date = new TaskDateAdapter(this, taskList_w_date_record, dateList);
         //给列表空间设置适配器
-        if (state == sort_mode.PROJECT)
+        if (state == SortMode.PROJECT)
             elvProject.setAdapter(adapter);
-        else if (state == sort_mode.DEADLINE)
+        else if (state == SortMode.DEADLINE)
             elvProject.setAdapter(adapter_w_date);
-
-
 
         //点击子条目
         elvProject.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
@@ -169,9 +167,9 @@ public class MainActivity extends AppCompatActivity {
             public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                 //尝试链接finish和check
 //                CheckBox checkBox = null;
-//                if(state == sort_mode.DEADLINE ){
+//                if(state == SortMode.DEADLINE ){
 //                    checkBox = (CheckBox) v.findViewById(R.id.checkbox);
-//                }else if(state == sort_mode.PROJECT ){
+//                }else if(state == SortMode.PROJECT ){
 //
 ////                    if (project.equals("Study")) checkBox = (CheckBox) v.findViewById(R.id.study_checkbox);
 ////                    else if (project.equals("Life")) checkBox = (CheckBox) v.findViewById(R.id.life_checkbox);
@@ -188,13 +186,9 @@ public class MainActivity extends AppCompatActivity {
 //                        }
 //                    });
 //                }
-
-
-                Toast.makeText(MainActivity.this, "  子条目：" + childPosition + "  id:" + id + " finish"+finish, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "  子条目：" + childPosition + "  id:" + id + " finish" + finish, Toast.LENGTH_SHORT).show();
                 return false;
             }
-
-
         });
 
         //modify task & delete task
@@ -207,11 +201,11 @@ public class MainActivity extends AppCompatActivity {
                 int childPosition = ExpandableListView.getPackedPositionChild(packedPos);
                 //如果选择的是父条目childPosition为-1，长按父条目的时候我们并不需要修改什么
                 //保证是长按子条目时才对任务信息进行修改
-                if(childPosition != -1){
+                if (childPosition != -1) {
                     Task curTask = new Task();
-                    if (state == sort_mode.PROJECT)
+                    if (state == SortMode.PROJECT)
                         curTask = taskList.get(projectList[groupPosition]).get(childPosition);
-                    else if (state == sort_mode.DEADLINE)
+                    else if (state == SortMode.DEADLINE)
                         curTask = taskList_w_date.get(dateList.get(groupPosition)).get(childPosition);
                     //先得到当前任务的信息并展示出来
                     name = curTask.getName();
@@ -229,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
                     BottomSheetDialog sheetDialog = new BottomSheetDialog(MainActivity.this, R.style.BottomSheetStyle);
                     View sheetView = LayoutInflater.from(getApplicationContext())
-                            .inflate(R.layout.activity_bottom_menu, (LinearLayout)findViewById(R.id.bottom_layout));
+                            .inflate(R.layout.activity_bottom_menu, (LinearLayout) findViewById(R.id.bottom_layout));
                     //Task name
                     etn = (EditText) sheetView.findViewById(R.id.editTaskName);
                     etn.setText(curTask.getName());
@@ -239,25 +233,25 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             Calendar calendar = Calendar.getInstance();
-                            new TimePickerDialog( MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                            new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
                                 @Override
                                 public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                                     //在这里更新用户选择的时间，否则数据不是最新的
                                     hourOfDay_ = hourOfDay;
                                     minute_ = minute;
                                     String tempMinute = "" + minute_;
-                                    if(minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
+                                    if (minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
                                     deadline = hourOfDay_ + ":" + tempMinute + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
-                                    String text="你选择了"+hourOfDay+"时"+minute+"分";
+                                    String text = "你选择了" + hourOfDay + "时" + minute + "分";
                                     mInfoDeadline.setText(deadline);
                                     System.out.println(text);
-                                    Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
+                                    Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
                                 }
                             }
-                                    ,calendar.get(Calendar.HOUR_OF_DAY)
-                                    ,calendar.get(Calendar.MINUTE),true).show();
+                                    , calendar.get(Calendar.HOUR_OF_DAY)
+                                    , calendar.get(Calendar.MINUTE), true).show();
                             //Choose date(year,month,day)
-                            new DatePickerDialog( MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+                            new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
                                 @Override
                                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                                     year_ = year;
@@ -268,12 +262,12 @@ public class MainActivity extends AppCompatActivity {
                                     String text = "你选择了：" + year + "年" + (month + 1) + "月" + dayOfMonth + "日";
                                     mInfoDeadline.setText(deadline);
                                     System.out.println(text);
-                                    Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
+                                    Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
                                 }
                             }
-                                    ,calendar.get(Calendar.YEAR)
-                                    ,calendar.get(Calendar.MONTH)
-                                    ,calendar.get(Calendar.DAY_OF_MONTH)).show();
+                                    , calendar.get(Calendar.YEAR)
+                                    , calendar.get(Calendar.MONTH)
+                                    , calendar.get(Calendar.DAY_OF_MONTH)).show();
                         }
                     });
 
@@ -321,9 +315,10 @@ public class MainActivity extends AppCompatActivity {
                     tvDelete = (TextView) sheetView.findViewById(R.id.textview_delete);
                     tvDelete.setOnClickListener(new View.OnClickListener() {
                         Task removeTask_ = new Task();
+
                         @Override
                         public void onClick(View v) {
-                            if (state == sort_mode.PROJECT) {
+                            if (state == SortMode.PROJECT) {
                                 if (groupPosition == 0) {
                                     removeTask_ = study.get(childPosition);
                                     study.remove(childPosition);
@@ -340,17 +335,17 @@ public class MainActivity extends AppCompatActivity {
                                 //updateList();
                                 item_hide_isChecked_state(show_hidden_checked);
                                 item_finish_isChecked_state(show_finished_checked);
-                            } else if (state == sort_mode.DEADLINE) {
+                            } else if (state == SortMode.DEADLINE) {
                                 removeTask_ = taskList_w_date.get(dateList.get(groupPosition)).get(childPosition);
                                 deleteTaskByIndex(groupPosition, childPosition);
                             }
 
                             // Delete the task for other task list
-                            if (state == sort_mode.PROJECT) {
+                            if (state == SortMode.PROJECT) {
                                 DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
-                                                          removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
+                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
                                 deleteTaskByKey(removeTask_, key);
-                            } else if (state == sort_mode.DEADLINE) {
+                            } else if (state == SortMode.DEADLINE) {
                                 if (removeTask_.getProject().equals(projectList[0])) {
                                     study.remove(removeTask_);
                                 } else if (removeTask_.getProject().equals(projectList[1])) {
@@ -388,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
                             String createTime = sdf.format(System.currentTimeMillis());
                             curTask_.setIndex(createTime); //用时间戳做index，保证唯一
                             //modify project
-                            if (state == sort_mode.PROJECT) {
+                            if (state == SortMode.PROJECT) {
 
                                 if (!prevProject.equals(project)) {
                                     taskList.get(prevProject).remove(childPosition);
@@ -402,32 +397,29 @@ public class MainActivity extends AppCompatActivity {
                                     else if (project.equals("Work")) work.add(curTask_);
                                     else if (project.equals("Others")) others.add(curTask_);
                                 }
-                            } else if (state == sort_mode.DEADLINE) {
+                            } else if (state == SortMode.DEADLINE) {
                                 deleteTaskByIndex(groupPosition, childPosition);
                                 addTask(new Task(curTask_));
                             }
 
 
-                            if (state == sort_mode.PROJECT) {
+                            if (state == SortMode.PROJECT) {
                                 DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
-                                                          removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
+                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
                                 Log.i("modify", key.toString());
                                 deleteTaskByKey(removeTask_, key);
                                 addTask(curTask_);
-                            } else if (state == sort_mode.DEADLINE) {
+                            } else if (state == SortMode.DEADLINE) {
                                 if (project.equals("Study")) {
                                     study.remove(removeTask_);
                                     study.add(curTask_);
-                                }
-                                else if (project.equals("Life")) {
+                                } else if (project.equals("Life")) {
                                     life.remove(removeTask_);
                                     life.add(curTask_);
-                                }
-                                else if (project.equals("Work")) {
+                                } else if (project.equals("Work")) {
                                     work.remove(removeTask_);
                                     work.add(curTask_);
-                                }
-                                else if (project.equals("Others")) {
+                                } else if (project.equals("Others")) {
                                     work.remove(removeTask_);
                                     others.add(curTask_);
                                 }
@@ -463,7 +455,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //底部菜单
                 BottomSheetDialog sheetDialog = new BottomSheetDialog(MainActivity.this, R.style.BottomSheetStyle);
-                View sheetView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_bottom_menu, (LinearLayout)findViewById(R.id.bottom_layout));
+                View sheetView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_bottom_menu, (LinearLayout) findViewById(R.id.bottom_layout));
                 //Task name
                 etn = (EditText) sheetView.findViewById(R.id.editTaskName);
 
@@ -474,25 +466,25 @@ public class MainActivity extends AppCompatActivity {
                         Calendar calendar = Calendar.getInstance();
                         //Choose exact time(hour, minute)
                         //用户选择具体时间（时，分）
-                        new TimePickerDialog( MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                        new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
                             @Override
                             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                                 hourOfDay_ = hourOfDay;
                                 minute_ = minute;
                                 String tempMinute = "" + minute_;
-                                if(minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
+                                if (minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
                                 deadline = hourOfDay_ + ":" + tempMinute + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
                                 String text = "你选择了" + hourOfDay + "时" + minute + "分";
                                 mInfoDeadline.setText(deadline);
                                 System.out.println(text);
-                                Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
+                                Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
                             }
                         }
-                        ,calendar.get(Calendar.HOUR_OF_DAY)
-                        ,calendar.get(Calendar.MINUTE),true).show();
+                                , calendar.get(Calendar.HOUR_OF_DAY)
+                                , calendar.get(Calendar.MINUTE), true).show();
                         //Choose date(year,month,day)
                         //用户选择日期（年，月，日）
-                        new DatePickerDialog( MainActivity.this, new DatePickerDialog.OnDateSetListener() {
+                        new DatePickerDialog(MainActivity.this, new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                                 year_ = year;
@@ -503,12 +495,12 @@ public class MainActivity extends AppCompatActivity {
                                 String text = "你选择了：" + year + "年" + (month + 1) + "月" + dayOfMonth + "日";
                                 mInfoDeadline.setText(deadline);
                                 System.out.println(text);
-                                Toast.makeText( MainActivity.this, text, Toast.LENGTH_SHORT ).show();
+                                Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
                             }
                         }
-                        ,calendar.get(Calendar.YEAR)
-                        ,calendar.get(Calendar.MONTH)
-                        ,calendar.get(Calendar.DAY_OF_MONTH)).show();
+                                , calendar.get(Calendar.YEAR)
+                                , calendar.get(Calendar.MONTH)
+                                , calendar.get(Calendar.DAY_OF_MONTH)).show();
 
                         //Display deadline in TextView
                         mInfoDeadline.setText(deadline);
@@ -523,7 +515,7 @@ public class MainActivity extends AppCompatActivity {
                 spinnerProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        project= spinnerProject.getItemAtPosition(i).toString();
+                        project = spinnerProject.getItemAtPosition(i).toString();
                         Toast.makeText(MainActivity.this, project, Toast.LENGTH_SHORT).show();
                     }
 
@@ -538,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
                 fSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isChecked) finish = true;
+                        if (isChecked) finish = true;
                         else finish = false;
                     }
                 });
@@ -549,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
                 hSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if(isChecked) hide = true;
+                        if (isChecked) hide = true;
                         else hide = false;
                     }
                 });
@@ -571,10 +563,10 @@ public class MainActivity extends AppCompatActivity {
                         curTask.setIndex(createTime); //用时间戳做index，保证唯一性
                         curTask.display();
                         //将curTask加入到属于它的任务队列中
-                        if(curTask.getProject().equals("Study")) study.add(curTask);
-                        else if(curTask.getProject().equals("Life")) life.add(curTask);
-                        else if(curTask.getProject().equals("Work")) work.add(curTask);
-                        else if(curTask.getProject().equals("Others")) others.add(curTask);
+                        if (curTask.getProject().equals("Study")) study.add(curTask);
+                        else if (curTask.getProject().equals("Life")) life.add(curTask);
+                        else if (curTask.getProject().equals("Work")) work.add(curTask);
+                        else if (curTask.getProject().equals("Others")) others.add(curTask);
                         addTask(new Task(curTask));
                         //updateList(); //将所有任务队列加入到任务数组中
                         item_hide_isChecked_state(show_hidden_checked);
@@ -589,7 +581,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void updateList(){
+
+    private void updateList() {
         taskList.put("Study", study);
         taskList.put("Life", life);
         taskList.put("Work", work);
@@ -597,7 +590,7 @@ public class MainActivity extends AppCompatActivity {
         savePreferences(taskList);
     }
 
-    private void updateList_show_hidden_checked(){
+    private void updateList_show_hidden_checked() {
         taskList.put("Study", study);
         taskList.put("Life", life);
         taskList.put("Work", work);
@@ -609,7 +602,7 @@ public class MainActivity extends AppCompatActivity {
         adapter_w_date.notifyDataSetChanged();
     }
 
-    private void updateList_show_finished_checked(){
+    private void updateList_show_finished_checked() {
         taskList.put("Study", study);
         taskList.put("Life", life);
         taskList.put("Work", work);
@@ -622,47 +615,47 @@ public class MainActivity extends AppCompatActivity {
         adapter_w_date.notifyDataSetChanged();
     }
 
-    private void updateList_show_hidden_unchecked(){
+    private void updateList_show_hidden_unchecked() {
         study_new.clear();
         life_new.clear();
         work_new.clear();
         others_new.clear();
         taskList_w_unhide_date.clear();
         // study
-        for( int i=0; i<study.size(); i++ ){
-            if(study.get(i).getHide() == true){
+        for (int i = 0; i < study.size(); i++) {
+            if (study.get(i).getHide() == true) {
                 // 若这个item是隐藏了的，则不显示隐藏了的项目
-            }else{
+            } else {
                 // 若这个item是未隐藏的，则需要对其进行展示，将其添加到新的study列表当中
                 study_new.add(study.get(i));
             }
         }
 
         // life
-        for( int i=0; i<life.size(); i++ ){
-            if(life.get(i).getHide() == true){
+        for (int i = 0; i < life.size(); i++) {
+            if (life.get(i).getHide() == true) {
                 // 若这个item是隐藏了的，则不显示隐藏了的项目
-            }else{
+            } else {
                 // 若这个item是未隐藏的，则需要对其进行展示，将其添加到新的life列表当中
                 life_new.add(life.get(i));
             }
         }
 
         // work
-        for( int i=0; i<work.size(); i++ ){
-            if(work.get(i).getHide() == true){
+        for (int i = 0; i < work.size(); i++) {
+            if (work.get(i).getHide() == true) {
                 // 若这个item是隐藏了的，则不显示隐藏了的项目
-            }else{
+            } else {
                 // 若这个item是未隐藏的，则需要对其进行展示，将其添加到新的work列表当中
                 work_new.add(work.get(i));
             }
         }
 
         // others
-        for( int i=0; i<others.size(); i++ ){
-            if(others.get(i).getHide() == true){
+        for (int i = 0; i < others.size(); i++) {
+            if (others.get(i).getHide() == true) {
                 // 若这个item是隐藏了的，则不显示隐藏了的项目
-            }else{
+            } else {
                 // 若这个item是未隐藏的，则需要对其进行展示，将其添加到新的others列表当中
                 others_new.add(others.get(i));
             }
@@ -671,15 +664,15 @@ public class MainActivity extends AppCompatActivity {
         //deadline
         taskList_w_date.forEach((key, value) -> {
             ArrayList<Task> temp = new ArrayList<>();
-            for( int i=0; i<value.size(); i++ ){
-                if(value.get(i).getHide() == true){
+            for (int i = 0; i < value.size(); i++) {
+                if (value.get(i).getHide() == true) {
                     // 若这个item是完成了的，则不显示完成了的项目
-                }else{
+                } else {
                     // 若这个item是未完成的，则需要对其进行展示，将其添加到新的others列表当中
                     temp.add(value.get(i));
                 }
             }
-            taskList_w_unhide_date.put(key,temp);
+            taskList_w_unhide_date.put(key, temp);
         });
 
 
@@ -699,7 +692,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void updateList_show_finished_unchecked(){
+    private void updateList_show_finished_unchecked() {
         study_unfinish.clear();
         life_unfinish.clear();
         work_unfinish.clear();
@@ -708,40 +701,40 @@ public class MainActivity extends AppCompatActivity {
 
 
         // study
-        for( int i=0; i<study.size(); i++ ){
-            if(study.get(i).getFinish() == true){
+        for (int i = 0; i < study.size(); i++) {
+            if (study.get(i).getFinish() == true) {
                 // 若这个item是完成了的，则不显示完成了的项目
-            }else{
+            } else {
                 // 若这个item是未完成的，则需要对其进行展示，将其添加到新的study列表当中
                 study_unfinish.add(study.get(i));
             }
         }
 
         // life
-        for( int i=0; i<life.size(); i++ ){
-            if(life.get(i).getFinish() == true){
+        for (int i = 0; i < life.size(); i++) {
+            if (life.get(i).getFinish() == true) {
                 // 若这个item是完成了的，则不显示完成了的项目
-            }else{
+            } else {
                 // 若这个item是未完成的，则需要对其进行展示，将其添加到新的life列表当中
                 life_unfinish.add(life.get(i));
             }
         }
 
         // work
-        for( int i=0; i<work.size(); i++ ){
-            if(work.get(i).getFinish() == true){
+        for (int i = 0; i < work.size(); i++) {
+            if (work.get(i).getFinish() == true) {
                 // 若这个item是完成了的，则不显示完成了的项目
-            }else{
+            } else {
                 // 若这个item是未完成的，则需要对其进行展示，将其添加到新的work列表当中
                 work_unfinish.add(work.get(i));
             }
         }
 
         // others
-        for( int i=0; i<others.size(); i++ ){
-            if(others.get(i).getFinish() == true){
+        for (int i = 0; i < others.size(); i++) {
+            if (others.get(i).getFinish() == true) {
                 // 若这个item是完成了的，则不显示完成了的项目
-            }else{
+            } else {
                 // 若这个item是未完成的，则需要对其进行展示，将其添加到新的others列表当中
                 others_unfinish.add(others.get(i));
             }
@@ -750,18 +743,16 @@ public class MainActivity extends AppCompatActivity {
         //deadline
         taskList_w_date.forEach((key, value) -> {
             ArrayList<Task> temp = new ArrayList<>();
-            for( int i=0; i<value.size(); i++ ){
-                if(value.get(i).getFinish() == true){
+            for (int i = 0; i < value.size(); i++) {
+                if (value.get(i).getFinish() == true) {
                     // 若这个item是完成了的，则不显示完成了的项目
-                }else{
+                } else {
                     // 若这个item是未完成的，则需要对其进行展示，将其添加到新的others列表当中
                     temp.add(value.get(i));
                 }
             }
-            taskList_w_unfinish_date.put(key,temp);
+            taskList_w_unfinish_date.put(key, temp);
         });
-
-
 
         // update
         taskList.clear();
@@ -780,21 +771,21 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void item_hide_isChecked_state(boolean flag){
-        if(flag){
+    public void item_hide_isChecked_state(boolean flag) {
+        if (flag) {
             // 显示隐藏了的项目
             updateList_show_hidden_checked();
-        }else{
+        } else {
             // 不显示隐藏了的项目
             updateList_show_hidden_unchecked();
         }
     }
 
-    public void item_finish_isChecked_state(boolean flag){
-        if(flag){
+    public void item_finish_isChecked_state(boolean flag) {
+        if (flag) {
             // 显示完成了的项目
             updateList_show_finished_checked();
-        }else{
+        } else {
             // 不显示完成了的项目
             updateList_show_finished_unchecked();
         }
@@ -803,7 +794,7 @@ public class MainActivity extends AppCompatActivity {
     private void addTask(@NonNull Task task) {
         Log.i("DEBUG", "addTask");
         DateKey key = new DateKey(task.getYear(), task.getMonth(), task.getDayOfMonth(),
-                                  task.getDayOfWeek(), task.getHour(), task.getMinute());
+                task.getDayOfWeek(), task.getHour(), task.getMinute());
         Log.i("DEBUG", key.toString());
         if (!dateList.contains(key)) {
             dateList.add(key);
@@ -840,27 +831,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void savePreferences(HashMap<String, ArrayList<Task>> taskList){
+    private void savePreferences(HashMap<String, ArrayList<Task>> taskList) {
         ArrayList<Task> record = null;
         SharedPreferences sharedPreferences = getSharedPreferences("shared preference", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         record = new ArrayList<>();
-        for(int i = 0; i < study.size(); i++) record.add(study.get(i));
-        for(int i = 0; i < life.size(); i++) record.add(life.get(i));
-        for(int i = 0; i < work.size(); i++) record.add(work.get(i));
-        for(int i = 0; i < others.size(); i++) record.add(others.get(i));
+        for (int i = 0; i < study.size(); i++) record.add(study.get(i));
+        for (int i = 0; i < life.size(); i++) record.add(life.get(i));
+        for (int i = 0; i < work.size(); i++) record.add(work.get(i));
+        for (int i = 0; i < others.size(); i++) record.add(others.get(i));
         String json = gson.toJson(record);
         editor.putString("record", json);
         editor.apply();
     }
-    private void loadPreferences(){
+
+    private void loadPreferences() {
         SharedPreferences sharedPreferences = getSharedPreferences("shared preference", MODE_PRIVATE);
         Gson gson = new Gson();
         String json = sharedPreferences.getString("record", "");
-        Type type = new TypeToken<ArrayList<Task>>(){}.getType();
+        Type type = new TypeToken<ArrayList<Task>>() {
+        }.getType();
         record = gson.fromJson(json, type);
-        if(record == null)
+        if (record == null)
             record = new ArrayList<>();
     }
 
@@ -876,13 +869,13 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_sort_by_deadline:
                 item.setChecked(item.isChecked() ? false : true);
-                state = sort_mode.DEADLINE;
+                state = SortMode.DEADLINE;
                 elvProject.setAdapter(adapter_w_date);
                 Toast.makeText(this, "menu_sort_by_deadline", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_sort_by_project:
                 item.setChecked(item.isChecked() ? false : true);
-                state = sort_mode.PROJECT;
+                state = SortMode.PROJECT;
                 elvProject.setAdapter(adapter);
                 Toast.makeText(this, "menu_sort_by_project", Toast.LENGTH_SHORT).show();
                 return true;
@@ -916,7 +909,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Generate notification
     public void generateNotification(String detail) {
         @SuppressLint("RemoteViewLayout") RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
 
@@ -930,13 +922,13 @@ public class MainActivity extends AppCompatActivity {
         view.setOnClickPendingIntent(R.id.button_notification, pendingIntent);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
-                                                                            .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                                                            .setContent(view)
-                                                                            .setAutoCancel(true)
-                                                                            .setOnlyAlertOnce(true)
-                                                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                                                            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                                                                            .setOngoing(true);
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContent(view)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setOngoing(true);
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {

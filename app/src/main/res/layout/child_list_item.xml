@@ -1,79 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
-    <androidx.cardview.widget.CardView
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="10dp"
+    app:contentPadding="5dp">
+
+    <TextView
+        android:id="@+id/tvCharacter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="10dp"
-        app:contentPadding="5dp">
-        <TextView
-            android:id="@+id/tvCharacter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="0dp"
-            android:textSize="20dp"
-            android:textColor="@color/lightblack"
-            android:textStyle="bold"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="0dp"
+        android:textColor="@color/lightblack"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/imageview_hide"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="23dp"
-            android:layout_marginLeft="145dp"
-            android:src="@drawable/ic_baseline_visibility_off_24"/>
+    <ImageView
+        android:id="@+id/imageview_hide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="145dp"
+        android:layout_marginTop="23dp"
+        android:src="@drawable/ic_baseline_visibility_off_24" />
 
-        <CheckBox
-            android:id="@+id/study_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="0dp"
-            android:layout_marginLeft="150dp"
-            android:textColor="@color/purple_200"
-            android:focusable="false"/>
+    <CheckBox
+        android:id="@+id/study_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="0dp"
+        android:focusable="false"
+        android:textColor="@color/purple_200" />
 
-        <CheckBox
-            android:id="@+id/life_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="0dp"
-            android:layout_marginLeft="150dp"
-            android:textColor="@color/blue"
-            android:focusable="false"/>
+    <CheckBox
+        android:id="@+id/life_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="0dp"
+        android:focusable="false"
+        android:textColor="@color/blue" />
 
-        <CheckBox
-            android:id="@+id/work_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="0dp"
-            android:layout_marginLeft="150dp"
-            android:textColor="@color/teal_200"
-            android:focusable="false"/>
+    <CheckBox
+        android:id="@+id/work_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="0dp"
+        android:focusable="false"
+        android:textColor="@color/teal_200" />
 
-        <CheckBox
-            android:id="@+id/others_checkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="0dp"
-            android:layout_marginLeft="150dp"
-            android:focusable="false"/>
+    <CheckBox
+        android:id="@+id/others_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="0dp"
+        android:focusable="false" />
 
-        <TextView
-            android:id="@+id/tvDeadline"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:layout_marginLeft="15dp"
-            android:textSize="15dp"
-            android:textColor="@color/grey"/>
-    </androidx.cardview.widget.CardView>
-</LinearLayout>
+    <TextView
+        android:id="@+id/tvDeadline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="25dp"
+        android:textColor="@color/grey"
+        android:textSize="15dp" />
+</androidx.cardview.widget.CardView>

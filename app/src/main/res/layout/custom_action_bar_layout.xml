@@ -4,21 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="50dp"
         app:cardCornerRadius="3dp"
         app:cardElevation="5dp"
         app:cardMaxElevation="50dp">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:text="@string/app_name"
-            android:textSize="25dp"
-            android:textColor="#4f5555"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="3dp"
-            android:textStyle="bold"/>
+            android:text="@string/app_name"
+            android:textColor="#4f5555"
+            android:textSize="25dp"
+            android:textStyle="bold" />
 
         <ImageView
             android:layout_width="30dp"

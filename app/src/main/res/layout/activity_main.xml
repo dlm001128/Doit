@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <!-- 可以展开的Listview -->
     <!-- groupIndicator="@null"是去掉默认的箭头 -->
@@ -9,18 +9,19 @@
     <ExpandableListView
         android:id="@+id/expandableListView"
         android:layout_width="720dp"
-        android:layout_height="1490dp">
-    </ExpandableListView>
+        android:layout_height="1490dp" />
 
+    <!--        android:layout_marginTop="683dp"-->
     <Button
         android:id="@+id/addButton"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_marginTop="683dp"
-        android:text="ADD TASK"
-        android:textSize="25dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_selector"
+        android:gravity="center"
+        android:text="Add Task"
         android:textColor="@color/black"
-        android:textStyle="bold"
-        android:gravity="center"/>
+        android:textSize="25dp"
+        android:textStyle="bold" />
 
 </RelativeLayout>

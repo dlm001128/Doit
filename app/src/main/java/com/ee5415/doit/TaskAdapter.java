@@ -1,4 +1,4 @@
-package com.example.doit;
+package com.ee5415.doit;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,9 +9,10 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ee5415.doit.R;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class TaskAdapter extends BaseExpandableListAdapter {
 

@@ -1,4 +1,4 @@
-package com.example.doit;
+package com.ee5415.doit;
 
 import android.content.Context;
 

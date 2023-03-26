@@ -3,11 +3,25 @@ plugins {
 }
 
 android {
-    namespace 'com.example.doit'
+    signingConfigs {
+        debug {
+            storeFile file('C:\\Users\\KMS\\AndroidStudioProjects\\Doit\\android.jks')
+            storePassword 'ee5415'
+            keyAlias 'AndroidKey'
+            keyPassword 'ee5415'
+        }
+        config {
+            storeFile file('C:\\Users\\KMS\\AndroidStudioProjects\\Doit\\android.jks')
+            storePassword 'ee5415'
+            keyAlias 'AndroidKey'
+            keyPassword 'ee5415'
+        }
+    }
+    namespace 'com.ee5415.doit'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.doit"
+        applicationId "com.ee5415.doit"
         minSdk 24
         targetSdk 33
         versionCode 1
