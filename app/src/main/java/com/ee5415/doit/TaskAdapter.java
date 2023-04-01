@@ -124,10 +124,11 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         holder.tvCharacter = convertView.findViewById(R.id.tvCharacter);
         holder.tvDeadline = convertView.findViewById(R.id.tvDeadline);
         //set different to different checkbox, but not implemented yet
-        if(groupPosition == 0) holder.cb = convertView.findViewById(R.id.study_checkbox);
-        else if(groupPosition == 1) holder.cb = convertView.findViewById(R.id.life_checkbox);
-        else if(groupPosition == 2) holder.cb = convertView.findViewById(R.id.work_checkbox);
-        else if(groupPosition == 3) holder.cb = convertView.findViewById(R.id.others_checkbox);
+//        if(groupPosition == 0) holder.cb = convertView.findViewById(R.id.study_checkbox);
+//        else if(groupPosition == 1) holder.cb = convertView.findViewById(R.id.life_checkbox);
+//        else if(groupPosition == 2) holder.cb = convertView.findViewById(R.id.work_checkbox);
+//        else if(groupPosition == 3) holder.cb = convertView.findViewById(R.id.others_checkbox);
+        holder.cb = convertView.findViewById(R.id.others_checkbox);
         holder.iv = convertView.findViewById(R.id.imageview_hide);
         convertView.setTag(holder);
         holder.tvCharacter.setText(curTask.getName());

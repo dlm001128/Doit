@@ -40,7 +40,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.ee5415.doit.R;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -89,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
     boolean hide; //if current task is hidden
 
     // show_hidden & unshow_hidden
-    boolean show_hidden_checked; // if show_hidden checkbox is selected
-    boolean show_finished_checked; //if show_finished checkbox is selected
+    boolean show_hidden_checked = true; // if show_hidden checkbox is selected
+    boolean show_finished_checked = true; //if show_finished checkbox is selected
 
     String index;
     TextView mInfoDeadline;
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
 //                        }
 //                    });
 //                }
-                Toast.makeText(MainActivity.this, "  子条目：" + childPosition + "  id:" + id + " finish" + finish, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "  子条目：" + childPosition + "  id:" + id + " finish" + finish, Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
@@ -242,10 +241,7 @@ public class MainActivity extends AppCompatActivity {
                                     String tempMinute = "" + minute_;
                                     if (minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
                                     deadline = hourOfDay_ + ":" + tempMinute + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
-                                    String text = "你选择了" + hourOfDay + "时" + minute + "分";
                                     mInfoDeadline.setText(deadline);
-                                    System.out.println(text);
-                                    Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
                                 }
                             }
                                     , calendar.get(Calendar.HOUR_OF_DAY)
@@ -259,10 +255,7 @@ public class MainActivity extends AppCompatActivity {
                                     dayOfMonth_ = dayOfMonth;
                                     dayOfWeek_ = calendar.get(Calendar.DAY_OF_WEEK);
                                     deadline = hourOfDay_ + ":" + minute_ + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
-                                    String text = "你选择了：" + year + "年" + (month + 1) + "月" + dayOfMonth + "日";
                                     mInfoDeadline.setText(deadline);
-                                    System.out.println(text);
-                                    Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
                                 }
                             }
                                     , calendar.get(Calendar.YEAR)
@@ -280,7 +273,6 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                             project = spinnerProject.getItemAtPosition(i).toString();
-                            Toast.makeText(MainActivity.this, project, Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
@@ -371,6 +363,9 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onClick(View v) {
+                            if(name.equals("") || deadline.equals("")) {
+                                return;
+                            }
                             Task removeTask_ = new Task(curTask_);
                             String prevProject = curTask_.getProject();
                             name = etn.getText().toString();
@@ -443,7 +438,7 @@ public class MainActivity extends AppCompatActivity {
         elvProject.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
             @Override
             public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
-                Toast.makeText(MainActivity.this, "父级条目：" + groupPosition + "  id:" + id, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this, "父级条目：" + groupPosition + "  id:" + id, Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
@@ -453,6 +448,11 @@ public class MainActivity extends AppCompatActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                name = "";
+                deadline = "";
+                project = "";
+                finish = false;
+                hide = false;
                 //底部菜单
                 BottomSheetDialog sheetDialog = new BottomSheetDialog(MainActivity.this, R.style.BottomSheetStyle);
                 View sheetView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.activity_bottom_menu, (LinearLayout) findViewById(R.id.bottom_layout));
@@ -474,10 +474,7 @@ public class MainActivity extends AppCompatActivity {
                                 String tempMinute = "" + minute_;
                                 if (minute_ >= 0 && minute_ <= 9) tempMinute = "0" + minute_;
                                 deadline = hourOfDay_ + ":" + tempMinute + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
-                                String text = "你选择了" + hourOfDay + "时" + minute + "分";
                                 mInfoDeadline.setText(deadline);
-                                System.out.println(text);
-                                Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
                             }
                         }
                                 , calendar.get(Calendar.HOUR_OF_DAY)
@@ -492,10 +489,7 @@ public class MainActivity extends AppCompatActivity {
                                 dayOfMonth_ = dayOfMonth;
                                 dayOfWeek_ = calendar.get(Calendar.DAY_OF_WEEK);
                                 deadline = hourOfDay_ + ":" + minute_ + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
-                                String text = "你选择了：" + year + "年" + (month + 1) + "月" + dayOfMonth + "日";
                                 mInfoDeadline.setText(deadline);
-                                System.out.println(text);
-                                Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
                             }
                         }
                                 , calendar.get(Calendar.YEAR)
@@ -516,7 +510,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                         project = spinnerProject.getItemAtPosition(i).toString();
-                        Toast.makeText(MainActivity.this, project, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -553,6 +546,9 @@ public class MainActivity extends AppCompatActivity {
                         //将填写的信息都写入curTask
                         Task curTask = new Task();
                         name = etn.getText().toString();
+                        if(name.equals("") || deadline.equals("")) {
+                            return;
+                        }
                         curTask.setName(name);
                         curTask.setDeadLine(year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_, deadline);
                         curTask.setProject(project);
