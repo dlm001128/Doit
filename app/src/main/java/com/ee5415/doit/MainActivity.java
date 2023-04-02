@@ -357,6 +357,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
+                    //modify task
                     confirmBtn = sheetView.findViewById(R.id.button_confirm);
                     Task curTask_ = curTask;
                     confirmBtn.setOnClickListener(new View.OnClickListener() {
@@ -379,14 +380,14 @@ public class MainActivity extends AppCompatActivity {
                             curTask_.setIndex(createTime); //用时间戳做index，保证唯一
                             //modify project
                             if (state == SortMode.PROJECT) {
-
                                 if (!prevProject.equals(project)) {
                                     taskList.get(prevProject).remove(childPosition);
-                                    if (groupPosition == 0) study.remove(childPosition);
-                                    else if (groupPosition == 1) life.remove(childPosition);
-                                    else if (groupPosition == 2) work.remove(childPosition);
-                                    else if (groupPosition == 3) others.remove(childPosition);
+                                    if (groupPosition == 0) study.remove(removeTask_);
+                                    else if (groupPosition == 1) life.remove(removeTask_);
+                                    else if (groupPosition == 2) work.remove(removeTask_);
+                                    else if (groupPosition == 3) others.remove(removeTask_);
 
+                                    //taskList.get(project).add(curTask_);
                                     if (project.equals("Study")) study.add(curTask_);
                                     else if (project.equals("Life")) life.add(curTask_);
                                     else if (project.equals("Work")) work.add(curTask_);
