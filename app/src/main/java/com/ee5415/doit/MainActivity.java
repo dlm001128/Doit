@@ -66,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Task> life_unfinish = new ArrayList<>(); //store life task
     ArrayList<Task> work_unfinish = new ArrayList<>(); //store work task
     ArrayList<Task> others_unfinish = new ArrayList<>(); //store others task
-    MenuItem item;
-
     EditText etn; //用于填写任务名的EditText
     String name; //task name
     String deadline; //task deadline
