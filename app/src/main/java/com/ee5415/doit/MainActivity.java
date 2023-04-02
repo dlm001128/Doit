@@ -912,7 +912,7 @@ public class MainActivity extends AppCompatActivity {
     private void addTask(@NonNull Task task) {
         Log.i("DEBUG", "addTask");
         DateKey key = new DateKey(task.getYear(), task.getMonth(), task.getDayOfMonth(),
-                task.getDayOfWeek(), task.getHour(), task.getMinute());
+                task.getDayOfWeek(), 0, 0);
         Log.i("DEBUG", key.toString());
         if (!dateList.contains(key)) {
             dateList.add(key);
