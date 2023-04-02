@@ -361,14 +361,14 @@ public class MainActivity extends AppCompatActivity {
                                 item_finish_isChecked_state(show_finished_checked);
                             } else if (state == SortMode.DEADLINE) {
                                 removeTask_ = taskList_w_date.get(dateList.get(groupPosition)).get(childPosition);
-//                                deleteTaskByIndex(groupPosition, childPosition);
+                                deleteTaskByIndex(groupPosition, childPosition);
                             }
 
                             // Delete the task for other task list
                             if (state == SortMode.PROJECT) {
-//                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
-//                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
-//                                deleteTaskByKey(removeTask_, key);
+                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
+                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
+                                deleteTaskByKey(removeTask_, key);
                             } else if (state == SortMode.DEADLINE) {
                                 if (removeTask_.getProject().equals(projectList[0])) {
                                     study.remove(removeTask_);
@@ -447,17 +447,17 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             } else if (state == SortMode.DEADLINE) {
-//                                deleteTaskByIndex(groupPosition, childPosition);
-//                                addTask(new Task(curTask_));
+                                deleteTaskByIndex(groupPosition, childPosition);
+                                addTask(new Task(curTask_));
                             }
 
 
                             if (state == SortMode.PROJECT) {
-//                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
-//                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
-//                                Log.i("modify", key.toString());
-//                                deleteTaskByKey(removeTask_, key);
-//                                addTask(curTask_);
+                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
+                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
+                                Log.i("modify", key.toString());
+                                deleteTaskByKey(removeTask_, key);
+                                addTask(curTask_);
                             } else if (state == SortMode.DEADLINE) {
                                 if (!prevProject.equals(project)) {
                                     if (prevProject.equals("Study")) study.remove(removeTask_);
