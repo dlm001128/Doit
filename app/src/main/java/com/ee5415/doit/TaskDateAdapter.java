@@ -112,6 +112,7 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
         else{
             holder = (ChildViewHolder) convertView.getTag();
         }
+        holder.colorBar = convertView.findViewById(R.id.color_bar);
         holder.tvCharacter = convertView.findViewById(R.id.tvCharacter);
         holder.tvDeadline = convertView.findViewById(R.id.tvDeadline);
         //set different to different checkbox, but not implemented yet
@@ -123,6 +124,20 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
 //        holder.tvDeadline.setText(curTask.getDeadline());
         String hourStr = curTask.getHour() < 10 ? "0" + curTask.getHour() : String.valueOf(curTask.getHour());
         String minuteStr = curTask.getMinute() < 10 ? "0" + curTask.getMinute() : String.valueOf(curTask.getMinute());
+        switch (curTask.getProject()) { //"Study", "Life", "Work", "Others"
+            case "Study":
+                holder.colorBar.setBackgroundColor(context.getResources().getColor(R.color.purple_200));
+                break;
+            case "Life":
+                holder.colorBar.setBackgroundColor(context.getResources().getColor(R.color.green));
+                break;
+            case "Work":
+                holder.colorBar.setBackgroundColor(context.getResources().getColor(R.color.blue));
+                break;
+            case "Others":
+                holder.colorBar.setBackgroundColor(context.getResources().getColor(R.color.grey));
+                break;
+        }
         holder.tvDeadline.setText(hourStr + ":" + minuteStr);
         if(curTask.getHide() == true)
             holder.iv.setVisibility(View.VISIBLE);
@@ -145,6 +160,7 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
 
     //子视图容器
     public class ChildViewHolder {
+        View colorBar;
         TextView tvCharacter;
         TextView tvDeadline;
         CheckBox cb;
