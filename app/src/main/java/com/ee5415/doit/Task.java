@@ -88,6 +88,7 @@ public class Task implements Serializable, Comparable<Task> {
         System.out.println("hide: " + this.hide_);
         System.out.println("deadline: " + this.deadline_);
         System.out.println("index: " + this.index_);
+        System.out.println("dayOfWeek: " + this.dayOfWeek_);
     }
 
     @Override

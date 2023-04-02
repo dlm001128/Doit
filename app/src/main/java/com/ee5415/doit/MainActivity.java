@@ -47,6 +47,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 
 //enum SortMode {
@@ -95,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
     TextView mInfoDeadline;
     TextView tvDelete; //textview_delete
     Switch fSwitch, hSwitch; //fSwitch-finish, hSwitch-hide
-    int year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_;
+    int year_, month_, dayOfMonth_, hourOfDay_, minute_;
+    int dayOfWeek_;
     String[] day = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
     private ExpandableListView elvProject;
     private TaskAdapter adapter;
@@ -253,7 +255,17 @@ public class MainActivity extends AppCompatActivity {
                                     year_ = year;
                                     month_ = month + 1;
                                     dayOfMonth_ = dayOfMonth;
-                                    dayOfWeek_ = calendar.get(Calendar.DAY_OF_WEEK);
+                                    SimpleDateFormat simpledateformat = new SimpleDateFormat("EEEE");
+                                    Date date = new Date(year, month, dayOfMonth-1);
+                                    String dayOfWeek = simpledateformat.format(date);
+                                    System.out.println(dayOfWeek);
+                                    if(dayOfWeek.equals("Monday")) dayOfWeek_ = 1;
+                                    else if(dayOfWeek.equals("Tuesday")) dayOfWeek_ = 2;
+                                    else if(dayOfWeek.equals("Wednesday")) dayOfWeek_ = 3;
+                                    else if(dayOfWeek.equals("Thursday")) dayOfWeek_ = 4;
+                                    else if(dayOfWeek.equals("Friday")) dayOfWeek_ = 5;
+                                    else if(dayOfWeek.equals("Saturday")) dayOfWeek_ = 6;
+                                    else if(dayOfWeek.equals("Sunday")) dayOfWeek_ = 0;
                                     deadline = hourOfDay_ + ":" + minute_ + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
                                     mInfoDeadline.setText(deadline);
                                 }
@@ -304,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
 
+                    //delete task
                     tvDelete = (TextView) sheetView.findViewById(R.id.textview_delete);
                     tvDelete.setOnClickListener(new View.OnClickListener() {
                         Task removeTask_ = new Task();
@@ -341,11 +354,11 @@ public class MainActivity extends AppCompatActivity {
                                 if (removeTask_.getProject().equals(projectList[0])) {
                                     study.remove(removeTask_);
                                 } else if (removeTask_.getProject().equals(projectList[1])) {
-                                    life.remove(childPosition);
+                                    life.remove(removeTask_);
                                 } else if (removeTask_.getProject().equals(projectList[2])) {
-                                    work.remove(childPosition);
+                                    work.remove(removeTask_);
                                 } else if (removeTask_.getProject().equals(projectList[3])) {
-                                    others.remove(childPosition);
+                                    others.remove(removeTask_);
                                 }
                                 //updateList();
                                 item_hide_isChecked_state(show_hidden_checked);
@@ -364,12 +377,12 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onClick(View v) {
-                            if(name.equals("") || deadline.equals("")) {
-                                return;
-                            }
                             Task removeTask_ = new Task(curTask_);
                             String prevProject = curTask_.getProject();
                             name = etn.getText().toString();
+                            if(name.equals("") || deadline.equals("")) {
+                                return;
+                            }
                             curTask_.setName(name);
                             curTask_.setDeadLine(year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_, deadline);
                             curTask_.setProject(project);
@@ -381,17 +394,37 @@ public class MainActivity extends AppCompatActivity {
                             //modify project
                             if (state == SortMode.PROJECT) {
                                 if (!prevProject.equals(project)) {
-                                    taskList.get(prevProject).remove(childPosition);
-                                    if (groupPosition == 0) study.remove(removeTask_);
-                                    else if (groupPosition == 1) life.remove(removeTask_);
-                                    else if (groupPosition == 2) work.remove(removeTask_);
-                                    else if (groupPosition == 3) others.remove(removeTask_);
+                                    if (prevProject.equals("Study")) study.remove(childPosition);
+                                    else if (prevProject.equals("Life")) life.remove(childPosition);
+                                    else if (prevProject.equals("Work")) work.remove(childPosition);
+                                    else if (prevProject.equals("Others")) others.remove(childPosition);
 
-                                    //taskList.get(project).add(curTask_);
                                     if (project.equals("Study")) study.add(curTask_);
                                     else if (project.equals("Life")) life.add(curTask_);
                                     else if (project.equals("Work")) work.add(curTask_);
                                     else if (project.equals("Others")) others.add(curTask_);
+                                } else {
+                                    if (project.equals("Study")) {
+                                        study.get(childPosition).setName(name);
+                                        study.get(childPosition).setDeadLine(year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_, deadline);
+                                        study.get(childPosition).setFinish(finish);
+                                        study.get(childPosition).setHide(hide);
+                                    } else if(prevProject.equals("Life")) {
+                                        life.get(childPosition).setName(name);
+                                        life.get(childPosition).setDeadLine(year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_, deadline);
+                                        life.get(childPosition).setFinish(finish);
+                                        life.get(childPosition).setHide(hide);
+                                    } else if(prevProject.equals("Work")) {
+                                        work.get(childPosition).setName(name);
+                                        work.get(childPosition).setDeadLine(year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_, deadline);
+                                        work.get(childPosition).setFinish(finish);
+                                        work.get(childPosition).setHide(hide);
+                                    } else if(prevProject.equals("Others")) {
+                                        others.get(childPosition).setName(name);
+                                        others.get(childPosition).setDeadLine(year_, month_, dayOfMonth_, dayOfWeek_, hourOfDay_, minute_, deadline);
+                                        others.get(childPosition).setFinish(finish);
+                                        others.get(childPosition).setHide(hide);
+                                    }
                                 }
                             } else if (state == SortMode.DEADLINE) {
                                 deleteTaskByIndex(groupPosition, childPosition);
@@ -406,18 +439,30 @@ public class MainActivity extends AppCompatActivity {
                                 deleteTaskByKey(removeTask_, key);
                                 addTask(curTask_);
                             } else if (state == SortMode.DEADLINE) {
-                                if (project.equals("Study")) {
-                                    study.remove(removeTask_);
-                                    study.add(curTask_);
-                                } else if (project.equals("Life")) {
-                                    life.remove(removeTask_);
-                                    life.add(curTask_);
-                                } else if (project.equals("Work")) {
-                                    work.remove(removeTask_);
-                                    work.add(curTask_);
-                                } else if (project.equals("Others")) {
-                                    work.remove(removeTask_);
-                                    others.add(curTask_);
+                                if (!prevProject.equals(project)) {
+                                    if (prevProject.equals("Study")) study.remove(removeTask_);
+                                    else if (prevProject.equals("Life")) life.remove(removeTask_);
+                                    else if (prevProject.equals("Work")) work.remove(removeTask_);
+                                    else if (prevProject.equals("Others")) others.remove(removeTask_);
+
+                                    if (project.equals("Study")) study.add(curTask_);
+                                    else if (project.equals("Life")) life.add(curTask_);
+                                    else if (project.equals("Work")) work.add(curTask_);
+                                    else if (project.equals("Others")) others.add(curTask_);
+                                } else {
+                                    if (project.equals("Study")) {
+                                        study.remove(removeTask_);
+                                        study.add(curTask_);
+                                    } else if(prevProject.equals("Life")) {
+                                        life.remove(removeTask_);
+                                        life.add(curTask_);
+                                    } else if(prevProject.equals("Work")) {
+                                        work.remove(removeTask_);
+                                        work.add(curTask_);
+                                    } else if(prevProject.equals("Others")) {
+                                        others.remove(removeTask_);
+                                        others.add(curTask_);
+                                    }
                                 }
                             }
                             item_hide_isChecked_state(show_hidden_checked);
@@ -488,7 +533,17 @@ public class MainActivity extends AppCompatActivity {
                                 year_ = year;
                                 month_ = month + 1;
                                 dayOfMonth_ = dayOfMonth;
-                                dayOfWeek_ = calendar.get(Calendar.DAY_OF_WEEK);
+                                SimpleDateFormat simpledateformat = new SimpleDateFormat("EEEE");
+                                Date date = new Date(year, month, dayOfMonth-1);
+                                String dayOfWeek = simpledateformat.format(date);
+                                System.out.println(dayOfWeek);
+                                if(dayOfWeek.equals("Monday")) dayOfWeek_ = 1;
+                                else if(dayOfWeek.equals("Tuesday")) dayOfWeek_ = 2;
+                                else if(dayOfWeek.equals("Wednesday")) dayOfWeek_ = 3;
+                                else if(dayOfWeek.equals("Thursday")) dayOfWeek_ = 4;
+                                else if(dayOfWeek.equals("Friday")) dayOfWeek_ = 5;
+                                else if(dayOfWeek.equals("Saturday")) dayOfWeek_ = 6;
+                                else if(dayOfWeek.equals("Sunday")) dayOfWeek_ = 0;
                                 deadline = hourOfDay_ + ":" + minute_ + "   " + dayOfMonth_ + "/" + month_ + "/" + year_;
                                 mInfoDeadline.setText(deadline);
                             }
@@ -868,13 +923,13 @@ public class MainActivity extends AppCompatActivity {
                 item.setChecked(item.isChecked() ? false : true);
                 state = SortMode.DEADLINE;
                 elvProject.setAdapter(adapter_w_date);
-                Toast.makeText(this, "menu_sort_by_deadline", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "menu_sort_by_deadline", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_sort_by_project:
                 item.setChecked(item.isChecked() ? false : true);
                 state = SortMode.PROJECT;
                 elvProject.setAdapter(adapter);
-                Toast.makeText(this, "menu_sort_by_project", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "menu_sort_by_project", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_show_finished:
                 item.setChecked(item.isChecked() ? false : true);
