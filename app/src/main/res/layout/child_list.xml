@@ -9,7 +9,7 @@
     <View
         android:id="@+id/color_bar"
         android:layout_width="6dp"
-        android:layout_height="60dp"
+        android:layout_height="47dp"
         android:background="@color/black"/>
 
     <TextView
