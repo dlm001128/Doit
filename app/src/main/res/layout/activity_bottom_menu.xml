@@ -115,8 +115,8 @@
                 android:layout_width="5dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:textSize="8pt"
-                android:entries="@array/project" />
+                android:entries="@array/project"
+                android:textSize="8pt" />
 
         </LinearLayout>
 
