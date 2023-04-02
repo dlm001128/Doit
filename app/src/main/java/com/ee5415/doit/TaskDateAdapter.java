@@ -9,8 +9,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ee5415.doit.R;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -122,7 +120,10 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
         holder.iv = convertView.findViewById(R.id.imageview_hide);
         convertView.setTag(holder);
         holder.tvCharacter.setText(curTask.getName());
-        holder.tvDeadline.setText(curTask.getDeadline());
+//        holder.tvDeadline.setText(curTask.getDeadline());
+        String hourStr = curTask.getHour() < 10 ? "0" + curTask.getHour() : String.valueOf(curTask.getHour());
+        String minuteStr = curTask.getMinute() < 10 ? "0" + curTask.getMinute() : String.valueOf(curTask.getMinute());
+        holder.tvDeadline.setText(hourStr + ":" + minuteStr);
         if(curTask.getHide() == true)
             holder.iv.setVisibility(View.VISIBLE);
         else

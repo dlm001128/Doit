@@ -3,7 +3,6 @@ package com.ee5415.doit;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.time.DayOfWeek;
 
 // This class is a key to search the same day in the taskList.
 
@@ -79,17 +78,41 @@ public class DateKey implements Serializable, Comparable<DateKey> {
     public String getTitle() {
         String monthStr = this.month_ < 10 ? "0" + this.month_ : String.valueOf(this.month_);
         String dayOfMonthStr = this.dayOfMonth_ < 10 ? "0" + this.dayOfMonth_ : String.valueOf(this.dayOfMonth_);
-        String dayOfWeekStr = String.valueOf(this.dayOfWeek_);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            dayOfWeekStr = DayOfWeek.of(this.dayOfWeek_).toString();
+        String dayOfWeekStr = "UNKNOWN";
+        switch (this.dayOfWeek_) {
+            case 0:
+                dayOfWeekStr = "Sunday";
+                break;
+            case 1:
+                dayOfWeekStr = "Monday";
+                break;
+            case 2:
+                dayOfWeekStr = "Tuesday";
+                break;
+            case 3:
+                dayOfWeekStr = "Wednesday";
+                break;
+            case 4:
+                dayOfWeekStr = "Thursday";
+                break;
+            case 5:
+                dayOfWeekStr = "Friday";
+                break;
+            case 6:
+                dayOfWeekStr = "Saturday";
+                break;
         }
+//        String dayOfWeekStr = String.valueOf(this.dayOfWeek_);
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            dayOfWeekStr = DayOfWeek.of(this.dayOfWeek_).toString();
+//        }
         return monthStr + "/" + dayOfMonthStr + " " + dayOfWeekStr;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = prime * (this.year_ + this.month_ + this.dayOfMonth_ + this.dayOfWeek_ + this.hour_ + this.minute_);
+        int result = prime * (this.year_ + this.month_ + this.dayOfMonth_ + this.dayOfWeek_);
         return result;
     }
 

@@ -34,6 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Confirm"
+                android:textAllCaps="false"
                 android:textSize="8pt" />
 
         </LinearLayout>
@@ -49,7 +50,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Enter your task here" />
+                android:hint="Enter your task here"
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -72,7 +74,8 @@
                 android:layout_weight="1"
                 android:text="Deadline"
                 android:textColor="@color/black"
-                android:textSize="8pt" />
+                android:textSize="8pt"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/textView_deadline"
@@ -81,7 +84,7 @@
                 android:layout_marginTop="1dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="DATE"
+                android:text="Press"
                 android:textSize="8pt" />
 
         </LinearLayout>
@@ -101,18 +104,18 @@
                 android:layout_width="10dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="-19dp"
                 android:layout_weight="1"
                 android:text="Project"
                 android:textColor="@color/black"
-                android:textSize="8pt" />
+                android:textSize="8pt"
+                android:textStyle="bold" />
 
             <Spinner
                 android:id="@+id/spinner_project"
                 android:layout_width="5dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-19dp"
                 android:layout_weight="1"
+                android:textSize="8pt"
                 android:entries="@array/project" />
 
         </LinearLayout>
@@ -135,7 +138,8 @@
                 android:layout_weight="1"
                 android:text="Finish Task"
                 android:textColor="@color/black"
-                android:textSize="8pt" />
+                android:textSize="8pt"
+                android:textStyle="bold" />
 
             <Switch
                 android:id="@+id/finish"
@@ -163,7 +167,8 @@
                 android:layout_weight="1"
                 android:text="Hide Task"
                 android:textColor="@color/black"
-                android:textSize="8pt" />
+                android:textSize="8pt"
+                android:textStyle="bold" />
 
             <Switch
                 android:id="@+id/hide"
@@ -192,7 +197,8 @@
                 android:layout_weight="1"
                 android:text="Delete Task"
                 android:textColor="@color/black"
-                android:textSize="8pt" />
+                android:textSize="8pt"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </LinearLayout>

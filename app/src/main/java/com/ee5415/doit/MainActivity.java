@@ -2,22 +2,17 @@ package com.ee5415.doit;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -26,19 +21,14 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
-import android.widget.RemoteViews;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
@@ -50,9 +40,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
-//enum SortMode {
-//    DEADLINE, PROJECT
-//}
 
 public class MainActivity extends AppCompatActivity {
     private SortMode state = SortMode.DEADLINE;
@@ -114,13 +101,13 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.custom_action_bar_layout);
 
-        CHANNEL_ID = getString(R.string.channel_id);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "NotificationCode", NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            assert manager != null;
-            manager.createNotificationChannel(channel);
-        }
+//        CHANNEL_ID = getString(R.string.channel_id);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "NotificationCode", NotificationManager.IMPORTANCE_DEFAULT);
+//            NotificationManager manager = getSystemService(NotificationManager.class);
+//            assert manager != null;
+//            manager.createNotificationChannel(channel);
+//        }
 
         //加载之前的信息
         loadPreferences();
@@ -278,12 +265,50 @@ public class MainActivity extends AppCompatActivity {
 
                     //Task project
                     Spinner spinnerProject = sheetView.findViewById(R.id.spinner_project);
-                    ArrayAdapter<String> spinner_adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_expandable_list_item_1, projectList);
+                    ArrayAdapter<String> spinner_adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.dropdown_item, projectList){
+                        @Override
+                        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                            View view;
+                            view = View.inflate(MainActivity.this, R.layout.dropdown_item, null);
+                            TextView textView = (TextView) view.findViewById(R.id.tv_dropdown);
+                            textView.setText(projectList[position]);
+                            switch (position) {
+                                case 0:
+                                    textView.setTextColor(getResources().getColor(R.color.purple_200));
+                                    break;
+                                case 1:
+                                    textView.setTextColor(getResources().getColor(R.color.green));
+                                    break;
+                                case 2:
+                                    textView.setTextColor(getResources().getColor(R.color.blue));
+                                    break;
+                                case 3:
+                                    textView.setTextColor(getResources().getColor(R.color.grey));
+                                    break;
+                            }
+
+                            return view;
+                        }
+                    };
                     spinnerProject.setAdapter(spinner_adapter);
                     spinnerProject.setSelection(spinner_adapter.getPosition(curTask.getProject()));
                     spinnerProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                         @Override
                         public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            switch (i) {
+                                case 0:
+                                    ((TextView) adapterView.getChildAt(0)).setTextColor(getResources().getColor(R.color.purple_200));
+                                    break;
+                                case 1:
+                                    ((TextView) adapterView.getChildAt(0)).setTextColor(getResources().getColor(R.color.green));
+                                    break;
+                                case 2:
+                                    ((TextView) adapterView.getChildAt(0)).setTextColor(getResources().getColor(R.color.blue));
+                                    break;
+                                case 3:
+                                    ((TextView) adapterView.getChildAt(0)).setTextColor(getResources().getColor(R.color.grey));
+                                    break;
+                            }
                             project = spinnerProject.getItemAtPosition(i).toString();
                         }
 
@@ -299,8 +324,6 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             finish = isChecked;
-//                            if(isChecked) finish = true;
-//                            else finish = false;
                         }
                     });
 
@@ -311,8 +334,6 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                             hide = isChecked;
-//                            if(isChecked) hide = true;
-//                            else hide = false;
                         }
                     });
 
@@ -342,14 +363,14 @@ public class MainActivity extends AppCompatActivity {
                                 item_finish_isChecked_state(show_finished_checked);
                             } else if (state == SortMode.DEADLINE) {
                                 removeTask_ = taskList_w_date.get(dateList.get(groupPosition)).get(childPosition);
-                                deleteTaskByIndex(groupPosition, childPosition);
+//                                deleteTaskByIndex(groupPosition, childPosition);
                             }
 
                             // Delete the task for other task list
                             if (state == SortMode.PROJECT) {
-                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
-                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
-                                deleteTaskByKey(removeTask_, key);
+//                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
+//                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
+//                                deleteTaskByKey(removeTask_, key);
                             } else if (state == SortMode.DEADLINE) {
                                 if (removeTask_.getProject().equals(projectList[0])) {
                                     study.remove(removeTask_);
@@ -364,6 +385,7 @@ public class MainActivity extends AppCompatActivity {
                                 item_hide_isChecked_state(show_hidden_checked);
                                 item_finish_isChecked_state(show_finished_checked);
                             }
+                            updateTaskListDate();
                             adapter.notifyDataSetChanged();
                             adapter_w_date.notifyDataSetChanged();
                             sheetDialog.cancel();
@@ -427,17 +449,17 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             } else if (state == SortMode.DEADLINE) {
-                                deleteTaskByIndex(groupPosition, childPosition);
-                                addTask(new Task(curTask_));
+//                                deleteTaskByIndex(groupPosition, childPosition);
+//                                addTask(new Task(curTask_));
                             }
 
 
                             if (state == SortMode.PROJECT) {
-                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
-                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
-                                Log.i("modify", key.toString());
-                                deleteTaskByKey(removeTask_, key);
-                                addTask(curTask_);
+//                                DateKey key = new DateKey(removeTask_.getYear(), removeTask_.getMonth(), removeTask_.getDayOfMonth(),
+//                                        removeTask_.getDayOfWeek(), removeTask_.getHour(), removeTask_.getMinute());
+//                                Log.i("modify", key.toString());
+//                                deleteTaskByKey(removeTask_, key);
+//                                addTask(curTask_);
                             } else if (state == SortMode.DEADLINE) {
                                 if (!prevProject.equals(project)) {
                                     if (prevProject.equals("Study")) study.remove(removeTask_);
@@ -465,6 +487,7 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                             }
+                            updateTaskListDate();
                             item_hide_isChecked_state(show_hidden_checked);
                             item_finish_isChecked_state(show_finished_checked);
                             curTask_.display();
@@ -560,17 +583,59 @@ public class MainActivity extends AppCompatActivity {
                 //project
                 //用户选择任务所属项目并更新
                 Spinner spinnerProject = sheetView.findViewById(R.id.spinner_project);
-                ArrayAdapter<String> spinner_adapter = new ArrayAdapter<String>(MainActivity.this, android.R.layout.simple_expandable_list_item_1, projectList);
+                ArrayAdapter<String> spinner_adapter = new ArrayAdapter<String>(MainActivity.this, R.layout.dropdown_item, projectList){
+                    @Override
+                    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                        View view;
+                        view = View.inflate(MainActivity.this, R.layout.dropdown_item, null);
+                        TextView textView = (TextView) view.findViewById(R.id.tv_dropdown);
+                        textView.setText(projectList[position]);
+                        switch (position) {
+                            case 0:
+                                textView.setTextColor(getResources().getColor(R.color.purple_200));
+                                break;
+                            case 1:
+                                textView.setTextColor(getResources().getColor(R.color.green));
+                                break;
+                            case 2:
+                                textView.setTextColor(getResources().getColor(R.color.blue));
+                                break;
+                            case 3:
+                                textView.setTextColor(getResources().getColor(R.color.grey));
+                                break;
+                        }
+
+                        return view;
+                    }
+                };
+
                 spinnerProject.setAdapter(spinner_adapter);
                 spinnerProject.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @SuppressLint("ResourceAsColor")
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                        switch (i) {
+                            case 0:
+                                ((TextView) adapterView.getChildAt(0)).setTextColor(getResources().getColor(R.color.purple_200));
+                                break;
+                            case 1:
+                                ((TextView) adapterView.getChildAt(0)).setTextColor(getResources().getColor(R.color.green));
+                                break;
+                            case 2:
+                                ((TextView) adapterView.getChildAt(0)).setTextColor(getResources().getColor(R.color.blue));
+                                break;
+                            case 3:
+                                ((TextView) adapterView.getChildAt(0)).setTextColor(getResources().getColor(R.color.grey));
+                                break;
+                        }
                         project = spinnerProject.getItemAtPosition(i).toString();
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView) {
+
                     }
+
                 });
 
                 //finish
@@ -619,7 +684,8 @@ public class MainActivity extends AppCompatActivity {
                         else if (curTask.getProject().equals("Life")) life.add(curTask);
                         else if (curTask.getProject().equals("Work")) work.add(curTask);
                         else if (curTask.getProject().equals("Others")) others.add(curTask);
-                        addTask(new Task(curTask));
+//                        addTask(new Task(curTask));
+                        updateTaskListDate();
                         //updateList(); //将所有任务队列加入到任务数组中
                         item_hide_isChecked_state(show_hidden_checked);
                         item_finish_isChecked_state(show_finished_checked);
@@ -883,6 +949,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void updateTaskListDate() {
+        ArrayList<Task> record_ = new ArrayList<>();
+        for (int i = 0; i < study.size(); i++) record_.add(study.get(i));
+        for (int i = 0; i < life.size(); i++) record_.add(life.get(i));
+        for (int i = 0; i < work.size(); i++) record_.add(work.get(i));
+        for (int i = 0; i < others.size(); i++) record_.add(others.get(i));
+
+        dateList.clear();
+        taskList_w_date.clear();
+
+        for (Task t : record_) {
+            addTask(new Task(t));
+        }
+    }
+
     private void savePreferences(HashMap<String, ArrayList<Task>> taskList) {
         ArrayList<Task> record = null;
         SharedPreferences sharedPreferences = getSharedPreferences("shared preference", MODE_PRIVATE);
@@ -946,55 +1027,55 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.channel_name);
-            String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system;
-            // Can't change the importance or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+//    public void createNotificationChannel() {
+//        // Create the NotificationChannel, but only on API 26+ because the NotificationChannel class is new and not in the support library
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            CharSequence name = getString(R.string.channel_name);
+//            String description = getString(R.string.channel_description);
+//            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+//            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+//            channel.setDescription(description);
+//            // Register the channel with the system;
+//            // Can't change the importance or other notification behaviors after this
+//            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//    }
 
-    public void generateNotification(String detail) {
-        @SuppressLint("RemoteViewLayout") RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
-
-        Intent intent = new Intent(MainActivity.this, NotificationReceiver.class);
-
-        // FIXME
-        intent.setAction("createTask");
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        view.setTextViewText(R.id.tv_detail, detail);
-        view.setOnClickPendingIntent(R.id.button_notification, pendingIntent);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContent(view)
-                .setAutoCancel(true)
-                .setOnlyAlertOnce(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setOngoing(true);
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
-
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // FIXME
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-
-        notificationManagerCompat.notify(0, builder.build()); // FIXME
-    }
+//    public void generateNotification(String detail) {
+//        @SuppressLint("RemoteViewLayout") RemoteViews view = new RemoteViews(getPackageName(), R.layout.notification);
+//
+//        Intent intent = new Intent(MainActivity.this, NotificationReceiver.class);
+//
+//        // FIXME
+//        intent.setAction("createTask");
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(MainActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+//
+//        view.setTextViewText(R.id.tv_detail, detail);
+//        view.setOnClickPendingIntent(R.id.button_notification, pendingIntent);
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+//                .setSmallIcon(R.drawable.ic_launcher_foreground)
+//                .setContent(view)
+//                .setAutoCancel(true)
+//                .setOnlyAlertOnce(true)
+//                .setPriority(NotificationCompat.PRIORITY_HIGH)
+//                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+//                .setOngoing(true);
+//        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(MainActivity.this);
+//
+//        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+//            // FIXME
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return;
+//        }
+//
+//        notificationManagerCompat.notify(0, builder.build()); // FIXME
+//    }
 }

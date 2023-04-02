@@ -4,12 +4,6 @@ plugins {
 
 android {
 //    signingConfigs {
-//        debug {
-//            storeFile file('C:\\Users\\KMS\\AndroidStudioProjects\\Doit\\android.jks')
-//            storePassword 'ee5415'
-//            keyAlias 'AndroidKey'
-//            keyPassword 'ee5415'
-//        }
 //        config {
 //            storeFile file('C:\\Users\\KMS\\AndroidStudioProjects\\Doit\\android.jks')
 //            storePassword 'ee5415'
