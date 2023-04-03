@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
     private Context context;
     private HashMap<DateKey, ArrayList<Task>> taskList_w_date;// 子条目
     private ArrayList<DateKey> dateList;// 父条目
+
 
     public TaskDateAdapter(Context context, HashMap<DateKey, ArrayList<Task>> taskList, ArrayList<DateKey> dateList) {
         super();
@@ -144,11 +146,20 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
         else
             holder.iv.setVisibility(View.INVISIBLE);
 
+        holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Task t = (Task) getChild(groupPosition, childPosition);
+                t.setFinish(isChecked);
+            }
+        });
+
         if(curTask.getFinish() == true) holder.cb.setChecked(true);
         else holder.cb.setChecked(false);
 
         return convertView;
     }
+
 
     /**
      * 子条目是否可以选中

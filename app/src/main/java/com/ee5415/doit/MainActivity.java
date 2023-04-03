@@ -815,7 +815,6 @@ public class MainActivity extends AppCompatActivity {
         others_unfinish.clear();
         taskList_w_unfinish_date.clear();
 
-
         // study
         for (int i = 0; i < study.size(); i++) {
             if (study.get(i).getFinish() == true) {

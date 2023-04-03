@@ -6,10 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.ee5415.doit.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -133,10 +132,10 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         holder.tvCharacter = convertView.findViewById(R.id.tvCharacter);
         holder.tvDeadline = convertView.findViewById(R.id.tvDeadline);
         //set different to different checkbox, but not implemented yet
-//        if(groupPosition == 0) holder.cb = convertView.findViewById(R.id.study_checkbox);
-//        else if(groupPosition == 1) holder.cb = convertView.findViewById(R.id.life_checkbox);
-//        else if(groupPosition == 2) holder.cb = convertView.findViewById(R.id.work_checkbox);
-//        else if(groupPosition == 3) holder.cb = convertView.findViewById(R.id.others_checkbox);
+        if(groupPosition == 0) holder.cb = convertView.findViewById(R.id.study_checkbox);
+        else if(groupPosition == 1) holder.cb = convertView.findViewById(R.id.life_checkbox);
+        else if(groupPosition == 2) holder.cb = convertView.findViewById(R.id.work_checkbox);
+        else if(groupPosition == 3) holder.cb = convertView.findViewById(R.id.others_checkbox);
         holder.cb = convertView.findViewById(R.id.others_checkbox);
         holder.iv = convertView.findViewById(R.id.imageview_hide);
         convertView.setTag(holder);
@@ -144,6 +143,14 @@ public class TaskAdapter extends BaseExpandableListAdapter {
         holder.tvDeadline.setText(curTask.getDeadline());
         if(taskList.get(projectList[groupPosition]).get(childPosition).getHide() == true) holder.iv.setVisibility(View.VISIBLE);
         else holder.iv.setVisibility(View.INVISIBLE);
+
+        holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Task t = (Task) getChild(groupPosition, childPosition);
+                t.setFinish(isChecked);
+            }
+        });
 
         if(taskList.get(projectList[groupPosition]).get(childPosition).getFinish() == true) holder.cb.setChecked(true);
         else holder.cb.setChecked(false);
