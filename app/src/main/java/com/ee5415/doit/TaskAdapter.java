@@ -107,6 +107,15 @@ public class TaskAdapter extends BaseExpandableListAdapter {
             holder = (ParentViewHolder) convertView.getTag();
         }
         holder.tvTitle.setText(projectList[groupPosition]);
+        if (groupPosition == 0) {
+            holder.tvTitle.setTextColor(-4487428);
+        } else if (groupPosition == 1) {
+            holder.tvTitle.setTextColor(-10108268);
+        } else if (groupPosition == 2) {
+            holder.tvTitle.setTextColor(-14000982);
+        } else if (groupPosition == 3) {
+            holder.tvTitle.setTextColor(-7697266);
+        }
 
         return convertView;
     }
