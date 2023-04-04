@@ -134,7 +134,8 @@ public class MainActivity extends AppCompatActivity {
         }
         taskList_w_date_record.putAll(taskList_w_date);
 
-        updateList(); //更新taskList方便TaskAdapter展示task情况
+        //更新taskList方便TaskAdapter展示task情况
+        updateList();
 
         //通过资源标识获得空间实例
         elvProject = findViewById(R.id.expandableListView);
@@ -356,9 +357,6 @@ public class MainActivity extends AppCompatActivity {
                                     removeTask_ = others.get(childPosition);
                                     others.remove(childPosition);
                                 }
-                                //updateList();
-                                item_hide_isChecked_state(show_hidden_checked);
-                                item_finish_isChecked_state(show_finished_checked);
                             } else if (state == SortMode.DEADLINE) {
                                 removeTask_ = taskList_w_date.get(dateList.get(groupPosition)).get(childPosition);
                                 deleteTaskByIndex(groupPosition, childPosition);
@@ -379,11 +377,11 @@ public class MainActivity extends AppCompatActivity {
                                 } else if (removeTask_.getProject().equals(projectList[3])) {
                                     others.remove(removeTask_);
                                 }
-                                //updateList();
-                                item_hide_isChecked_state(show_hidden_checked);
-                                item_finish_isChecked_state(show_finished_checked);
                             }
                             updateTaskListDate();
+                            //updateList();
+                            item_finish_isChecked_state(show_finished_checked);
+                            item_hide_isChecked_state(show_hidden_checked);
                             adapter.notifyDataSetChanged();
                             adapter_w_date.notifyDataSetChanged();
                             sheetDialog.cancel();
@@ -486,11 +484,9 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                             updateTaskListDate();
-                            item_hide_isChecked_state(show_hidden_checked);
-                            item_finish_isChecked_state(show_finished_checked);
                             curTask_.display();
-                            adapter.notifyDataSetChanged();
-                            adapter_w_date.notifyDataSetChanged();
+                            item_finish_isChecked_state(show_finished_checked);
+                            item_hide_isChecked_state(show_hidden_checked);
                             sheetDialog.cancel();
                         }
                     });
@@ -685,10 +681,8 @@ public class MainActivity extends AppCompatActivity {
 //                        addTask(new Task(curTask));
                         updateTaskListDate();
                         //updateList(); //将所有任务队列加入到任务数组中
-                        item_hide_isChecked_state(show_hidden_checked);
                         item_finish_isChecked_state(show_finished_checked);
-                        // adapter.notifyDataSetChanged(); //提醒adapter重新展示任务情况
-                        // adapter_w_date.notifyDataSetChanged();
+                        item_hide_isChecked_state(show_hidden_checked);
                         sheetDialog.cancel(); //让底部菜单自己落下
                     }
                 });
