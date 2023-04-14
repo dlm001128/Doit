@@ -102,10 +102,7 @@ public class DateKey implements Serializable, Comparable<DateKey> {
                 dayOfWeekStr = "Saturday";
                 break;
         }
-//        String dayOfWeekStr = String.valueOf(this.dayOfWeek_);
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-//            dayOfWeekStr = DayOfWeek.of(this.dayOfWeek_).toString();
-//        }
+
         return monthStr + "/" + dayOfMonthStr + " " + dayOfWeekStr;
     }
 

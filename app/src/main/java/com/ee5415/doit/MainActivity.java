@@ -99,14 +99,6 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.custom_action_bar_layout);
 
-//        CHANNEL_ID = getString(R.string.channel_id);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "NotificationCode", NotificationManager.IMPORTANCE_DEFAULT);
-//            NotificationManager manager = getSystemService(NotificationManager.class);
-//            assert manager != null;
-//            manager.createNotificationChannel(channel);
-//        }
-
         //加载之前的信息
         loadPreferences();
         for (int i = 0; i < record.size(); i++) {
@@ -901,10 +893,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addTask(@NonNull Task task) {
-        Log.i("DEBUG", "addTask");
         DateKey key = new DateKey(task.getYear(), task.getMonth(), task.getDayOfMonth(),
                 task.getDayOfWeek(), 0, 0);
-        Log.i("DEBUG", key.toString());
         if (!dateList.contains(key)) {
             dateList.add(key);
             Collections.sort(dateList);
@@ -918,7 +908,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteTaskByIndex(int groupPosition, int childPosition) {
-        Log.i("DEBUG", "deleteTaskByIndex");
         taskList_w_date.get(dateList.get(groupPosition)).remove(childPosition);
         if (taskList_w_date.get(dateList.get(groupPosition)).size() == 0) {
             taskList_w_date.remove(dateList.get(groupPosition));
@@ -927,8 +916,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void deleteTaskByKey(@NonNull Task task, @NonNull DateKey key) {
-        Log.i("deleteTaskByKey", "Start deleteTaskByKey");
-        Log.i("deleteTaskByKey", key.toString());
         if (dateList.contains(key)) {
             task.display();
             taskList_w_date.get(key).get(0).display();

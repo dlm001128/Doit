@@ -20,15 +20,11 @@ public class TaskDateAdapter extends BaseExpandableListAdapter {
     private ArrayList<DateKey> dateList;// 父条目
 
 
-    public TaskDateAdapter(Context context, HashMap<DateKey, ArrayList<Task>> taskList, ArrayList<DateKey> dateList) {
+    public TaskDateAdapter(Context context, HashMap<DateKey, ArrayList<Task>> taskList_w_date, ArrayList<DateKey> dateList) {
         super();
         this.context = context;
-        this.taskList_w_date = taskList;
+        this.taskList_w_date = taskList_w_date;
         this.dateList = dateList;
-//        dateList = new ArrayList<>();
-//        for (Map.Entry<DateKey, ArrayList<Task>> set : taskList_w_date.entrySet()) {
-//            this.dateList.add(set.getKey());
-//        }
     }
 
     /**
